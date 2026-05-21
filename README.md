@@ -91,58 +91,41 @@ The graph redirects back to the post prompt node from the convo node instead of 
 
 ```mermaid
 graph TD
-    %% Styling Configuration
-    classDef client fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef api fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef state fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-    classDef sandbox fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef db fill:#ede7f6,stroke:#5e35b1,stroke-width:2px;
+    %% Nodes & Shapes
+    START([START])
+    PromptNode[prompt_node]
+    InputNode[input_node]
+    RouterNode{router_node}
+    ParseNode{parse_node}
+    MainNode{main_node}
+    ConvoNode{convo_node}
+    PostPromptNode[post_prompt_node]
+    END([END])
 
-    %% Graph Nodes
-    User([User: Dataset Upload]) :::client
-    UI[React Dashboard / Nginx] :::client
-    FastAPI[FastAPI Backend Broker] :::api
-    
-    subgraph LangGraph State Machine Loop
-        Validate[Node 1: Data Validation & Schema Profiling] :::state
-        RouteIntent{Node 2: Intent Router <br/> Ollama / Local LLM} :::state
-        CodeGen[Node 3: Script Generation <br/> Gemini API] :::state
-        Execute[Node 4: Code Execution Pipeline] :::state
-    end
+    %% Standard Edges
+    START --> PromptNode
+    PromptNode --> InputNode
+    InputNode --> RouterNode
+    PostPromptNode --> InputNode
 
-    subgraph Isolated Security Sandbox
-        Sandbox[Sandbox Runtime Container <br/> Pandas / NumPy / SciPy] :::sandbox
-    end
+    %% Conditional Edges from router_node
+    RouterNode -->|PARSE| ParseNode
+    RouterNode -->|CONVO| ConvoNode
+    RouterNode -->|END| END
 
-    subgraph Data & State Storage Tier
-        MinIO[(MinIO S3 Object Store <br/> Raw Data / Reports)] :::db
-        Postgres[(Postgres DB <br/> Run Logs & Metadata)] :::db
-        Chroma[(ChromaDB <br/> RAG Pattern Index)] :::db
-    end
+    %% Conditional Edges from convo_node
+    ConvoNode -->|s.log == 'Post Prompted'| PostPromptNode
+    ConvoNode -->|Else| PromptNode
 
-    %% Node Connections / Flow
-    User -->|1. HTTP Post / Websocket| UI
-    UI --> FastAPI
-    FastAPI -->|2. Stream Stream Data| MinIO
-    
-    %% Graph Loop Ingestion
-    FastAPI -->|3. Initialize Graph State| Validate
-    Validate -->|Update Schema Metadata| Postgres
-    Validate --> RouteIntent
-    
-    %% Multi-Agent Routing
-    RouteIntent -->|RAG Context Retrieval| Chroma
-    RouteIntent -->|Generate Python Analysis Script| CodeGen
-    CodeGen --> Execute
-    
-    %% Sandbox Isolation Ring
-    Execute -->|4. Dispatch Untrusted Code| Sandbox
-    Sandbox -->|Compute Advanced Statistics <br/> ANOVA / Chi-Square| Sandbox
-    Sandbox -->|5. Return Logs & Dataframe State| Execute
-    
-    %% Final Exit State
-    Execute -->|6. Error Catching / Loop Exit| RouteIntent
-    RouteIntent -->|7. Final Report Compilation| HTMLReport[Jinja2 HTML / PDF Report Engine]:::api
-    HTMLReport -->|Push Assets| MinIO
-    HTMLReport -->|8. Push Streaming Output Logs| UI
-```
+    %% Conditional Edges from parse_node
+    ParseNode -->|missing_fields == True| PromptNode
+    ParseNode -->|Else| MainNode
+
+    %% Conditional Edges from main_node
+    MainNode -->|'Successfully' in s.log| PostPromptNode
+    MainNode -->|Else| PromptNode
+
+    %% Apply Styles Separately
+    class START,END startEnd;
+    class PromptNode,InputNode,PostPromptNode nodeStyle;
+    class RouterNode,ParseNode,MainNode,ConvoNode choice;
