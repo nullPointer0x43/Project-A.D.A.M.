@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --primary:       #10b981;
+  --primary-dark:  #065f46;
+  --primary-light: #dcfce7;
+  --bg-page:       #f0fdf4;
+  --bg-card:       #ffffff;
+  --bg-subtle:     #f8fafc;
+  --bg-muted:      #f1f5f9;
+  --border:        #e2e8f0;
+  --border-accent: rgba(16, 185, 129, 0.2);
+  --text-dark:     #0f172a;
+  --text-body:     #1e293b;
+  --text-muted:    #64748b;
+  --text-faint:    #94a3b8;
+  --radius-sm:     6px;
+  --radius-md:     10px;
+  --radius-lg:     12px;
+
+  /* Typography scale — one source of truth */
+  --font-family:   'Inter', system-ui, sans-serif;
+  --fs-xs:         0.625rem;   /* 10px */
+  --fs-sm:         0.6875rem;  /* 11px */
+  --fs-base:       0.8125rem;  /* 13px */
+  --fs-md:         0.875rem;   /* 14px */
+  --fs-lg:         1rem;       /* 16px */
+  --fs-xl:         1.1rem;
+  --fw-normal:     400;
+  --fw-medium:     500;
+  --fw-semibold:   600;
+  --fw-bold:       700;
+  --fw-extrabold:  800;
+}
+
+/* ============================================================
+   BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--fs-base);
+  color: var(--text-body);
+  background: var(--bg-page);
+}
+
+/* ============================================================
+   LAYOUT WRAPPER
+   ============================================================ */
+.report-container {
+  max-width: 760px;
+  margin: 20px auto;
+  padding: 24px;
+  background: var(--bg-page);
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+/* ============================================================
+   FILE HEADER
+   ============================================================ */
+.file-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--primary);
+}
+
+.icon-status {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+
+.file-name  { font-size: var(--fs-xl); font-weight: var(--fw-semibold); color: var(--text-dark); }
+.file-status { font-size: var(--fs-sm); color: var(--text-muted); margin-top: 1px; }
+
+/* ============================================================
+   STAT GRID
+   ============================================================ */
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.85);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-accent);
+}
+.stat-card.full-width { grid-column: span 2; }
+
+/* ============================================================
+   SHARED LABELS / VALUES
+   ============================================================ */
+.stat-label {
+  display: block;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.stat-value {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-semibold);
+  color: var(--text-dark);
+  margin-top: 2px;
+}
+.stat-list { font-size: var(--fs-md); color: var(--text-body); margin-top: 4px; }
+
+/* ============================================================
+   SECTION TITLES  (page-break before each major section)
+   ============================================================ */
+.section-title {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-dark);
+  margin: 20px 0 4px;
+}
+.section-subtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Break BEFORE every section except the very first */
+.section-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+/* ============================================================
+   TAGS
+   ============================================================ */
+.tag {
+  display: inline-block;
+  font-size: var(--fs-sm);
+  padding: 2px 8px;
+  border-radius: 4px;
+  line-height: 1.6;
+}
+.tag-default { background: var(--bg-muted); color: var(--text-muted); border: 1px solid #979797; }
+.tag-custom  { background: var(--primary-light); border: 1px solid #bbf7d0; color: #166534; }
+
+/* ============================================================
+   MISSINGNESS SECTION
+   ============================================================ */
+/* Updated container to allow flexible height */
+.null-discovery-overview {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 16px;
+  background: #f1f5f9;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  height: auto; /* Ensure it grows */
+  min-height: min-content;
+}
+
+/* Remove the fixed height and overflow */
+.anomalies-container {
+  /* max-height: 120px;  <-- REMOVE THIS */
+  /* overflow-y: auto;   <-- REMOVE THIS */
+  padding-right: 4px;
+}
+
+/* Ensure tokens wrap naturally if there are many */
+.tag-row {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px; /* Increased gap slightly for better legibility */
+}
+
+.config-summary { /* no border — grid gutter provides separation */ }
+
+.anomalies-container::-webkit-scrollbar { width: 4px; }
+.anomalies-container::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+.anomaly-card {
+  background: var(--bg-card);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 4px;
+  border: 1px solid var(--border);
+}
+.anomaly-main { font-size: var(--fs-md); font-weight: var(--fw-semibold); display: block; }
+.anomaly-sub  { font-size: var(--fs-sm); color: var(--text-faint); display: block; margin-top: 1px; }
+
+/* Missingness table */
+.report-table { width: 100%; border-collapse: collapse; font-size: var(--fs-md); }
+.report-table th {
+  padding: 8px 10px;
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+}
+.report-table td { padding: 8px 10px; border-bottom: 1px solid var(--bg-subtle); }
+
+.data-type {
+  font-family: 'Menlo', 'Consolas', monospace;
+  font-size: var(--fs-xs);
+  color: var(--primary);
+  background: var(--primary-light);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+.badge-impute {
+  font-size: var(--fs-xs);
+  background: var(--primary-light);
+  color: #166534;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: var(--fw-medium);
+}
+.type-text { font-size: var(--fs-xs); color: var(--text-faint); margin-left: 3px; }
+
+/* ============================================================
+   UNIVARIATE SECTION
+   ============================================================ */
+.uni-row-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;               /* prevent any child overflow */
+}
+
+.uni-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.uni-title-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.uni-title-group h3 {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--text-dark);
+}
+
+.type-badge {
+  font-size: var(--fs-xs);
+  background: var(--bg-muted);
+  color: var(--text-muted);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+}
+
+.uni-grid {
+  display: flex;
+  gap: 16px;
+  border-top: 1px solid var(--bg-muted);
+  padding-top: 10px;
+}
+
+.uni-stats-col {
+  flex: 0 0 42%;
+  min-width: 0;                   /* allow flex child to shrink */
+}
+
+.uni-chart-col {
+  flex: 1;
+  min-width: 0;                   /* critical: allow shrink */
+  overflow: hidden;               /* clip any overflow */
+}
+
+/* Internal stat rows */
+.internal-stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--bg-subtle);
+}
+.internal-stat-label { color: var(--text-muted); }
+.internal-stat-value { font-weight: var(--fw-semibold); color: var(--text-dark); }
+
+/* ML action box */
+.ml-action-box {
+  margin-top: 10px;
+  background: #f0fdf4;
+  border-left: 3px solid var(--primary);
+  padding: 7px 9px;
+  font-size: var(--fs-sm);
+  border-radius: 0 4px 4px 0;
+}
+.ml-action-title {
+  font-weight: var(--fw-extrabold);
+  color: var(--primary-dark);
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 3px;
+}
+
+/* ── Chart placeholder ────────────────────────────── */
+.chart-svg-placeholder {
+  width: 100%;
+  /* Fixed height — bars/pie must fit within this box */
+  height: 110px;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-muted);
+  border-radius: var(--radius-sm);
+  padding: 8px 6px 4px;
+  overflow: hidden;               /* HARD clip */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-end;
+  position: relative;
+}
+
+/* ── Bar chart inside placeholder ────────────────── */
+.bar-chart-wrapper {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  width: 100%;
+  /* Reserve space for labels below bars */
+  height: 70px;                   /* bars live in this height */
+  flex-shrink: 0;
+}
+
+.bar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bar-rect {
+  background: var(--primary);
+  width: 70%;
+  border-radius: 2px 2px 0 0;
+  flex-shrink: 0;
+}
+
+.bar-label {
+  font-size: 5.5pt;
+  color: var(--text-faint);
+  text-align: center;
+  width: 100%;
+  margin-top: 3px;
+  line-height: 1.2;
+  /* Truncate long labels to one line */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Pie chart row inside placeholder ────────────── */
+.pie-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.legend-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+}
+
+.legend-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.legend-label {
+  font-size: 6pt;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 90px;
+}
+
+/* ============================================================
+   MULTIVARIATE SECTION
+   ============================================================ */
+.stat-summary-strip {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 16px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+
+.stat-badge-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-badge-label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+}
+.stat-badge-value {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--text-dark);
+}
+.stat-badge-value.highlight { color: var(--primary); }
+
+/* MV Card */
+.mv-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+
+.mv-header {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--bg-muted);
+  background: var(--bg-subtle);
+}
+
+.mv-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.icon-box {
+  background: var(--primary);
+  color: #fff;
+  font-weight: var(--fw-extrabold);
+  font-size: var(--fs-xs);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  min-width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.mv-title-text { flex: 1; min-width: 0; }
+
+.mv-title-text h3 {
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: var(--text-dark);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.multiply-sign { color: var(--primary); font-weight: var(--fw-normal); margin: 0 4px; }
+
+.mv-badges { display: flex; gap: 5px; margin-bottom: 2px; }
+
+.status-badge {
+  font-size: var(--fs-xs);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: var(--fw-extrabold);
+  letter-spacing: 0.03em;
+}
+.status-sig { background: var(--primary-light); color: #166534; }
+
+.mv-effect-score {
+  text-align: right;
+  flex-shrink: 0;
+}
+.mv-effect-score .mv-label {
+  font-size: var(--fs-xs);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  display: block;
+}
+.mv-effect-score .mv-value {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  color: var(--primary);
+}
+
+/* MV content area */
+.mv-content {
+  display: flex;
+  gap: 16px;
+  padding: 14px;
+}
+
+.mv-stats-pane {
+  flex: 0 0 42%;
+  min-width: 0;
+}
+
+.mv-visual-pane {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;               /* key: clip visual contents */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+}
+
+/* Stat lines in MV card */
+.stat-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: var(--fs-sm);
+  padding: 3px 0;
+  border-bottom: 1px solid var(--bg-subtle);
+}
+.stat-line .stat-label { font-size: var(--fs-xs); }
+.stat-line .stat-value { font-weight: var(--fw-semibold); color: var(--text-dark); font-size: var(--fs-sm); }
+
+.mag-highlight { color: #0369a1; font-weight: var(--fw-bold); }
+
+.mv-insight-box {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--bg-subtle);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 4px 4px 0;
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+
+/* ── Scatter plot ───────────────────────────────── */
+.scatter-container {
+  position: relative;
+  width: 100%;
+  /* Fixed aspect so axis labels stay in-bounds */
+  height: 130px;
+  /* Inset the axes to leave room for labels */
+  padding-bottom: 22px;
+  padding-left: 22px;
+}
+
+.scatter-axis-box {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-left: 2px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+  overflow: hidden;
+}
+
+.dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--primary);
+  border-radius: 50%;
+  opacity: 0.65;
+  transform: translate(-50%, 50%);
+}
+
+/* Labels are positioned OUTSIDE the axis-box in the padding space */
+.axis-label-x {
+  position: absolute;
+  bottom: 0;
+  left: 22px;
+  right: 0;
+  font-size: 6pt;
+  color: var(--text-faint);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+}
+
+.axis-label-y {
+  position: absolute;
+  top: 0;
+  bottom: 22px;
+  left: 0;
+  width: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.axis-label-y span {
+  font-size: 6pt;
+  color: var(--text-faint);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 100%;
+}
+
+/* ── Bar visual ─────────────────────────────────── */
+.mv-bar-visual { width: 100%; }
+.mv-track {
+  height: 10px;
+  background: var(--bg-muted);
+  border-radius: 5px;
+  overflow: hidden;
+  display: flex;
+}
+.mv-fill-bar {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 5px;
+}
+.visual-caption {
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ============================================================
+   PRINT STYLES
+   ============================================================ */
+@media print {
+  body { background: white; }
+  .report-container { border: none; box-shadow: none; max-width: 100%; }
+
+  .section-break {
+    page-break-before: always;
+    break-before: page;
+  }
+
+  .uni-row-card,
+  .mv-card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}
+        /* Insight Dossier (Full Page Card) */
+.insight-dossier {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 30px;
+    padding: 24px;
+}
+
+.dossier-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 2px solid var(--bg-muted);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.dossier-section { margin-bottom: 25px; }
+
+.popping-title {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    margin-bottom: 10px;
+    font-weight: 800;
+}
+
+/* Source/Document Rows */
+.source-row {
+    display: flex;
+    gap: 10px;
+    background: var(--bg-subtle);
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 5px;
+    font-size: var(--fs-sm);
+}
+.source-tag { font-weight: bold; color: var(--text-muted); flex-shrink: 0; }
+
+/* Code Layouts */
+.code-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+.visual-container {
+    background: #1e293b; /* Dark theme for code */
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.visual-header {
+    background: rgba(255,255,255,0.1);
+    color: white;
+    padding: 5px 12px;
+    font-size: var(--fs-xs);
+    font-weight: bold;
+}
+.code-block, .output-block {
+    padding: 12px;
+    font-family: 'Menlo', monospace;
+    font-size: 10px;
+    color: #e2e8f0;
+    white-space: pre-wrap;
+    margin: 0;
+}
+.output-block { color: #34d399; }
+
+/* Inference Styling */
+.inference-box {
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    border-left: 5px solid var(--primary);
+}
+
+/* Plot Gallery */
+.plots-gallery {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+.plot-card { width: 100%; max-width: 400px; text-align: center; }
+.analysis-plot {
+    width: 100%;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+.plot-caption { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 5px; }
+
+@media print {
+  .section-break {
+    page-break-before: always;
+    break-before: page;
+  }
+.code-layout { grid-template-columns: 1fr; } /* Stack code on print if narrow */
+.insight-dossier { border: 1px solid #eee; }
+}
+    </style>
+</head>
+<body>
+    <div class="report-container">
+
+        <!-- ── File Header ──────────────────────────────────────── -->
+        <div class="file-header">
+            <div class="icon-status">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <div>
+                <h2 class="file-name">{{ filename }}</h2>
+                <p class="file-status">{{ filesize }} • Verified</p>
+            </div>
+        </div>
+
+        <!-- ── Overview Grid ────────────────────────────────────── -->
+        <div class="report-grid">
+            <div class="stat-card">
+                <span class="stat-label">Rows / Cols</span>
+                <div class="stat-value">{{ row_count }} / {{ col_count }}</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Targets</span>
+                <div class="stat-value" style="font-size:var(--fs-md)">{{ targets | join(', ') }}</div>
+            </div>
+            <div class="stat-card full-width">
+                <span class="stat-label">Columns</span>
+                <div class="stat-list">{{ columns | join(', ') }}</div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════
+             SECTION: MISSINGNESS
+             ═══════════════════════════════════════════════════════ -->
+        <h2 class="section-title">Missingness Analysis</h2>
+        <p class="section-subtitle">Patterns and disguised null detection.</p>
+
+        <div class="null-discovery-overview">
+            <div class="config-summary">
+                <span class="stat-label">Active Patterns</span>
+                <div class="tag-row">
+                    {% for p in null_config.default_nulls %}<span class="tag tag-default">{{ p }}</span>{% endfor %}
+                    {% for p in null_config.custom_nulls %}<span class="tag tag-custom">{{ p }}</span>{% endfor %}
+                </div>
+            </div>
+            <div class="anomalies-container">
+                <span class="stat-label">Discovered Anomalies</span>
+                <div style="margin-top:6px">
+                    {% if anomalies %}
+                        {% for a in anomalies %}
+                        <div class="anomaly-card">
+                            <span class="anomaly-main">"{{ a.value }}"</span>
+                            <span class="anomaly-sub">{{ a.count }} hits</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                    <div class="anomaly-sub" style="margin-top:4px">No disguised nulls found.</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <table class="report-table">
+            <thead>
+                <tr>
+                    <th>Column</th>
+                    <th>Type</th>
+                    <th>Missing %</th>
+                    <th>Imputation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in missingness_table %}
+                <tr>
+                    <td style="font-weight:600">{{ row.display_name }}</td>
+                    <td><code class="data-type">{{ row.data_type }}</code></td>
+                    <td>
+                        {{ "%.1f"|format(row.missingness_severity) }}%
+                        <span class="type-text">({{ row.missingness_type }})</span>
+                    </td>
+                    <td><span class="badge-impute">{{ row.imputation_suggested }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- ═══════════════════════════════════════════════════════
+             SECTION: UNIVARIATE  (new page when printed)
+             ═══════════════════════════════════════════════════════ -->
+        <h2 class="section-title section-break">Univariate Analysis</h2>
+
+        {% for col_name, col_data in univariate_data.items() %}
+        <div class="uni-row-card">
+            <div class="uni-header">
+                <div class="uni-title-group">
+                    <h3>{{ col_name }}</h3>
+                    <span class="type-badge">{{ col_data.type }}</span>
+                </div>
+            </div>
+
+            <div class="uni-grid">
+                <!-- Stats column -->
+                <div class="uni-stats-col">
+                    <div class="internal-stat-row">
+                        <span class="internal-stat-label">
+                            {% if col_data.type == 'numeric' %}Mean / Median{% else %}Cardinality{% endif %}
+                        </span>
+                        <span class="internal-stat-value">
+                            {% if col_data.type == 'numeric' %}{{ col_data.mean }} / {{ col_data.median }}{% else %}{{ col_data.cardinality }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="internal-stat-row">
+                        <span class="internal-stat-label">Outliers (%)</span>
+                        <span class="internal-stat-value">{{ "%.1f"|format((col_data.Z_pc or 0) * 100) }}%</span>
+                    </div>
+                    <div class="ml-action-box">
+                        <div class="ml-action-title">ML Pipeline Action</div>
+                        <p style="margin:0; font-size:var(--fs-sm)">
+                            {% if col_data.type == 'numeric' %}
+                                Apply {{ col_data.transform }} transformation.
+                            {% else %}
+                                Use {{ col_data.encoding }} encoding.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Chart column -->
+                <div class="uni-chart-col">
+                    <div class="chart-svg-placeholder">
+                        {% if col_data.type == 'numeric' %}
+                            {# ── Bar chart ── #}
+                            {% set max_count = col_data.chart_data|map(attribute='count')|max %}
+                            <div class="bar-chart-wrapper">
+                                {% for item in col_data.chart_data[:6] %}
+                                <div class="bar-col">
+                                    {% set bar_pct = (item.count / max_count * 100)|round|int if max_count > 0 else 0 %}
+                                    {# Height in px within the 70px wrapper #}
+                                    <div class="bar-rect" style="height:{{ (bar_pct * 0.6)|round|int }}px;"></div>
+                                    <div class="bar-label" title="{{ item.bin }}">{{ item.bin }}</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            {# ── Pie chart ── #}
+                            {% set total  = col_data.chart_data|map(attribute='value')|sum %}
+                            {% set ns     = namespace(offset=0) %}
+                            {% set colors = ['#10b981','#059669','#047857','#065f46','#064e3b','#34d399'] %}
+                            <div class="pie-row">
+                                <svg width="70" height="70" viewBox="0 0 42 42" style="flex-shrink:0">
+                                    <circle cx="21" cy="21" r="15.915" fill="transparent" stroke="#f1f5f9" stroke-width="5"></circle>
+                                    {% for item in col_data.chart_data %}
+                                        {% set seg = (item.value / total * 100) if total > 0 else 0 %}
+                                        <circle cx="21" cy="21" r="15.915" fill="transparent"
+                                                stroke="{{ colors[loop.index0 % (colors|length)] }}"
+                                                stroke-width="5"
+                                                stroke-dasharray="{{ seg }} {{ 100 - seg }}"
+                                                stroke-dashoffset="{{ 25 - ns.offset }}"></circle>
+                                        {% set ns.offset = ns.offset + seg %}
+                                    {% endfor %}
+                                </svg>
+                                <div class="legend-container">
+                                    {% for item in col_data.chart_data[:5] %}
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background:{{ colors[loop.index0 % (colors|length)] }}"></div>
+                                        <span class="legend-label" title="{{ item.name }}">{{ item.name }}</span>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div><!-- /uni-chart-col -->
+            </div><!-- /uni-grid -->
+        </div><!-- /uni-row-card -->
+        {% endfor %}
+
+        <!-- ═══════════════════════════════════════════════════════
+             SECTION: MULTIVARIATE  (new page when printed)
+             ═══════════════════════════════════════════════════════ -->
+        <h2 class="section-title section-break">Multivariate Analysis</h2>
+        <p class="section-subtitle">Significant interactions and feature dependencies.</p>
+
+        <div class="stat-summary-strip">
+            <div class="stat-badge-item">
+                <span class="stat-badge-label">Total Combinations</span>
+                <span class="stat-badge-value">{{ multivariate_meta.total_pairs }}</span>
+            </div>
+            <div class="stat-badge-item">
+                <span class="stat-badge-label">Significant Hits</span>
+                <span class="stat-badge-value highlight">{{ multivariate_meta.significant_hits }}</span>
+            </div>
+        </div>
+
+        {% for pair in multivariate_data %}
+        <div class="mv-card">
+            <div class="mv-header">
+                <div class="mv-title-row">
+                    <span class="icon-box">{{ 'N²' if pair.pair_type == 'Num-Num' else 'C²' if pair.pair_type == 'Cat-Cat' else 'NC' }}</span>
+                    <div class="mv-title-text">
+                        <div class="mv-badges">
+                            <span class="type-badge">{{ pair.pair_type }}</span>
+                            <span class="status-badge status-sig">SIGNIFICANT</span>
+                        </div>
+                        <h3>{{ pair.vars[0] }} <span class="multiply-sign">×</span> {{ pair.vars[1] }}</h3>
+                    </div>
+                    <div class="mv-effect-score">
+                        <span class="mv-label">Effect</span>
+                        <span class="mv-value">{{ "%.3f"|format(pair.effect_val) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mv-content">
+                <!-- Stats pane -->
+                <div class="mv-stats-pane">
+                    <div class="stat-line">
+                        <span class="stat-label">Method</span>
+                        <span class="stat-value">{{ pair.test_used }}</span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">p-value</span>
+                        <span class="stat-value">
+                            {{ "%.2e"|format(pair.p_adj) if pair.p_adj < 0.001 else "%.4f"|format(pair.p_adj) }}
+                        </span>
+                    </div>
+                    <div class="stat-line">
+                        <span class="stat-label">Strength</span>
+                        <span class="stat-value mag-highlight">{{ pair.magnitude }}</span>
+                    </div>
+                    <div class="mv-insight-box">
+                        <div class="ml-action-title">Automated Insight</div>
+                        <p style="font-size:var(--fs-sm); line-height:1.5">
+                            A <strong>{{ pair.magnitude|lower }}</strong> association detected. The evidence strongly suggests a relationship exists between these features.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Visual pane -->
+                <div class="mv-visual-pane">
+                    {% if pair.pair_type == 'Num-Num' and pair.scatter_points %}
+                        {# ── Scatter plot with contained axis labels ── #}
+                        <div class="scatter-container">
+                            <!-- Y-axis label (vertical, left padding strip) -->
+                            <div class="axis-label-y">
+                                <span title="{{ pair.vars[1] }}">{{ pair.vars[1] }}</span>
+                            </div>
+                            <!-- Plot area with clipped dots -->
+                            <div class="scatter-axis-box">
+                                {% set x_max = pair.scatter_points|map(attribute='x')|max %}
+                                {% set y_max = pair.scatter_points|map(attribute='y')|max %}
+                                {% for pt in pair.scatter_points %}
+                                    <div class="dot"
+                                         style="left:{{ (pt.x / x_max * 90)|int }}%;
+                                                bottom:{{ (pt.y / y_max * 90)|int }}%;"></div>
+                                {% endfor %}
+                            </div>
+                            <!-- X-axis label (horizontal, bottom padding strip) -->
+                            <div class="axis-label-x" title="{{ pair.vars[0] }}">{{ pair.vars[0] }}</div>
+                        </div>
+                    {% else %}
+                        {# ── Effect magnitude bar ── #}
+                        <div class="mv-bar-visual">
+                            <div class="mv-label" style="margin-bottom:8px; font-size:var(--fs-xs)">Effect Direction</div>
+                            <div class="mv-track">
+                                <div class="mv-fill-bar"
+                                     style="width:{{ ([pair.effect_val|abs * 100, 100]|min)|int }}%;
+                                            margin-left:{{ '0' if pair.effect_val >= 0 else 'auto' }};"></div>
+                            </div>
+                            <div class="visual-caption"
+                                 style="text-align:{{ 'left' if pair.effect_val >= 0 else 'right' }}">
+                                {{ 'Positive' if pair.effect_val >= 0 else 'Negative' }} Influence
+                            </div>
+                        </div>
+                    {% endif %}
+                </div><!-- /mv-visual-pane -->
+            </div><!-- /mv-content -->
+        </div><!-- /mv-card -->
+        {% endfor %}
+
+        <!-- ═══════════════════════════════════════════════════════
+         SECTION: AGENTIC INSIGHT EXPLORER
+         ═══════════════════════════════════════════════════════ -->
+    <h2 class="section-title section-break">Agentic Insight Explorer</h2>
+    <p class="section-subtitle">Deep-dive analysis via Context Retrieval and Logic Execution.</p>
+
+    <div class="stat-summary-strip">
+        <div class="stat-badge-item">
+            <span class="stat-badge-label">Insights Generated</span>
+            <span class="stat-badge-value">{{ insights|length }}</span>
+        </div>
+        <div class="stat-badge-item">
+            <span class="stat-badge-label">Execution Mode</span>
+            <span class="stat-badge-value highlight">AGENTIC RAG</span>
+        </div>
+    </div>
+
+    {% for insight in insights %}
+    <div class="insight-dossier" {% if loop.first %}style="break-before: avoid; page-break-before: avoid;"{% endif %}>
+        <!-- Header -->
+        <div class="dossier-header">
+            <div class="icon-box">{{ "%02d" | format(loop.index) }}</div>
+            <div class="mv-title-text">
+                <span class="type-badge">{{ insight.type }}</span>
+                <h3>{{ insight.name }}</h3>
+            </div>
+            <div class="status-badge status-sig">VERIFIED</div>
+        </div>
+
+        <!-- 01. Context Retrieval -->
+        <div class="dossier-section">
+            <h4 class="popping-title">01. Context Retrieval</h4>
+            <div class="doc-grid">
+                {% for doc in insight.documents_retrieved %}
+                <div class="source-row">
+                    <span class="source-tag">SOURCE {{ loop.index }}</span>
+                    <span class="source-value">{{ doc }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- 02. Logic & Execution -->
+        <div class="dossier-section">
+            <h4 class="popping-title">02. Logic & Execution</h4>
+            <div class="code-layout">
+                <div class="visual-container">
+                    <div class="visual-header">Python Logic</div>
+                    <pre class="code-block"><code>{{ insight.code_generated }}</code></pre>
+                </div>
+                <div class="visual-container">
+                    <div class="visual-header">Console Output</div>
+                    <pre class="output-block">{{ insight.code_output }}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 03. Visual Analysis -->
+        {% if insight.plots %}
+        <div class="dossier-section">
+            <h4 class="popping-title">03. Visual Analysis</h4>
+            <div class="plots-gallery">
+                {% for plot in insight.plots %}
+                <div class="plot-card">
+                    <img src="{{ plot }}" class="analysis-plot">
+                    <div class="plot-caption">Figure {{ loop.index }}: Agent Generated Visualization</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 04. Final Inference -->
+        <div class="dossier-section">
+            <h4 class="popping-title">04. Final Inference</h4>
+            <div class="inference-box">
+                {{ insight.final_inference }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    </div><!-- /report-container -->
+</body>
+</html>

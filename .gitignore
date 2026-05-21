@@ -1,0 +1,19 @@
+/.idea
+/Backend/__pycache__
+/Backend/.idea
+/Backend/Nodes/__pycache__
+
+# Logs
+/Frontend/logs
+/Frontend/*.log
+/Frontend/npm-debug.log*
+/Frontend/yarn-debug.log*
+/Frontend/yarn-error.log*
+/Frontend/pnpm-debug.log*
+/Frontend/lerna-debug.log*
+
+/Frontend/node_modules
+
+/PostgreSQL/.idea
+/SandBox/.idea
+.env

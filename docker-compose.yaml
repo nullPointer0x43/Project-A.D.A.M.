@@ -1,0 +1,163 @@
+services:
+  frontend:
+    image: kinjal1234/react-nginx-frontend:latest
+    container_name: react-nginx-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - backend_network
+    depends_on:
+      - app_api
+
+  app_api:
+    image: kinjal1234/fastapi-pipeline-api:latest
+    container_name: fastapi-pipeline-api
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - HF_TOKEN=${HF_TOKEN}
+    networks:
+      - backend_network
+    depends_on:
+      minio:
+        condition: service_healthy
+      postgre:
+        condition: service_started
+      chroma_db:
+        condition: service_started
+      ollama-model-provisioner:
+        condition: service_completed_successfully
+
+  postgre:
+    image: kinjal1234/postgres-metadata:latest
+    container_name: postgres-metadata
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app_metadata
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./Redis/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - backend_network
+
+  minio:
+    image: minio/minio
+    container_name: minio-storage
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_SERVER_URL: "http://localhost:9000"
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    networks:
+      - backend_network
+
+  sandbox_runtime:
+    image: kinjal1234/sandbox-runtime:latest
+    container_name: sandbox-runtime
+    ports:
+      - "8001:8001"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+    networks:
+      - backend_network
+    depends_on:
+      minio:
+        condition: service_healthy
+
+  chroma_db:
+    image: chromadb/chroma:latest
+    container_name: chroma-vector-store
+    ports:
+      - "8043:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    volumes:
+      - chroma_data:/chroma/chroma
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+    networks:
+      - backend_network
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: pipeline-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_storage:/root/.ollama
+    restart: unless-stopped
+    networks:
+      - backend_network
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  ollama-model-provisioner:
+    image: curlimages/curl:latest
+    container_name: ollama_model_provisioner
+    depends_on:
+      - ollama
+    networks:
+      - backend_network
+    entrypoint: [ "/bin/sh", "-c" ]
+    command:
+      - |
+        echo "Waiting for Ollama API to be ready..."
+        while ! curl -s http://ollama:11434/api/tags > /dev/null; do
+          sleep 2
+        done
+        
+        echo "Checking if llama3 is installed..."
+        if curl -s http://ollama:11434/api/tags | grep -q '"name":"llama3'; then
+          echo "llama3 is already downloaded. Exiting setup smoothly!"
+          exit 0
+        else
+          echo "llama3 not found. Pulling model..."
+          curl -X POST http://ollama:11434/api/pull -d '{"name": "llama3"}'
+        fi
+
+networks:
+  backend_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  minio_data:
+  chroma_data:
+  ollama_storage:
+    driver: local

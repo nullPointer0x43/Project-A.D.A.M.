@@ -1,0 +1,45 @@
+:root {
+  --chat-white-glass: rgba(255, 255, 255, 0.6);
+}
+
+.sidebarcard-container {
+  width: var(--card-width);
+  height: 40px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap; 
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 5px;
+  gap: 10px;
+  border-radius: 5px;
+  cursor: not-allowed;
+  transition: background-color 0.3s ease, width 0.3s ease-in-out;
+  box-shadow: 0 0 0 2px var(--chat-white-glass);
+}
+
+.sidebarcard-container:hover {
+  background-color: var(--chat-green-accent);
+}
+
+.icon-label {
+  display: flex;
+  align-items: center;
+  line-height: 1; 
+  flex-shrink: 0;
+  cursor: inherit;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: small;
+  font-weight: 600;
+  color: var(--chat-white);
+}
+
+.completed {  
+  z-index: 2;
+  box-shadow: 
+    0 0 0 2px var(--chat-white),
+    0 0 5px 4px var(--chat-green-accent);
+  transition: background-color 0.3s ease, width 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+}
