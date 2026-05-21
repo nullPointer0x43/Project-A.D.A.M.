@@ -7,6 +7,11 @@ Project A.D.A.M. is a production-grade, containerized agent based platform desig
 By combining deterministic programmatic pipelines with LLM reasoning, the system takes raw, uncurated datasets and automatically generates comprehensive, insights-driven data reports with minimal human intervention.
 
 ## 2. Table of Contents:
+1. **[Overview](#1-overview)**
+2. **[Table of Contents](#2-table-of-contents)**
+3. **[Agentic Orchestration](#3-agentic-orchestration-the-langgraph-architecture)**
+    - **[State Description](#31-state-of-langgraph)**
+    - **[File and Targets Subgraph](#32-file-and-target-input-subgraph)**
 
 ## 3. Agentic Orchestration: The LangGraph Architecture
 
@@ -47,10 +52,10 @@ All of the fields described in the classes are pretty self explanatory and are d
 * **Page Data:** This is a dictionary of the data required by the frontend for each page, such that it can be supplied whenever user switches between pages.
 
 ### 3.2 File and Target Input Subgraph:
-#### 3.2.1 Aim:
+#### **3.2.1 Aim:**
 The aim of this node is to take the file path, the targets for analysis (just for marking, in case this is ever used in combination with an entire Auto-ML pipeline), and verify if the target columns exist within the specified file.
 
-### 3.2.2 State:
+#### **3.2.2 State:**
 The rest of the state remains the same, but the `current_info` is changed to an object of type `PathInformation`
 
 ```python
@@ -71,7 +76,7 @@ class PathInformation(BaseModel):
     )
 ```
 
-### 3.2.3 Graph Flow:
+#### **3.2.3 Graph Flow:**
 
 As of now the the system only supports excel and .csv files. The file box in the front-end restricts user inputs to files of these formats. Upon receiving the file path, the system prompts for the analysis targets. 
 
@@ -89,6 +94,7 @@ The user may decide to change any of the data, in which case it is redirected to
 
 The graph redirects back to the post prompt node from the convo node instead of the prompt node if the data is already verified.
 
+#### **3.2.4 Graph Visualization:**
 ```mermaid
 graph TD
     %% Nodes & Shapes
@@ -129,3 +135,95 @@ graph TD
     class START,END startEnd;
     class PromptNode,InputNode,PostPromptNode nodeStyle;
     class RouterNode,ParseNode,MainNode,ConvoNode choice;
+```
+
+### 3.3 Disguised Null Identification Subgraph:
+#### **3.2.1 Aim:**
+The aim of this node is to search and replace disguised nulls (E.g. -999, 'nothing', etc with the `pandas` standard `null`). It has a default list of nulls as follows, and additionally prompts the user to supply any addition nulls that might be present in the data.
+
+```python
+self.null_values = [
+    "None", "nan", "NaN", "NAN", "null", "NULL", "undefined", "Undefined",
+    "n/a", "N/A", "na", "NA", "n.a.", "N.A.", "n/p", "not available", "not applicable",
+    "?", "-", "--", "---", ".", "...", "missing", "Missing", "MISSING", "unknown", "Unknown",
+    "", " ", "  ", "\t", "\n", "none",
+    -1, -99, -999, -9999, 0, 999, 9999, "999", "9999", "0", "-1",
+    "#N/A", "#N/A N/A", "#NA", "-1.#IND", "-1.#QNAN", "-NaN", "-nan", "1.#IND", "1.#QNAN",
+    "0000-00-00", "01-01-1970", "1900-01-01", "NaT", "nat"
+]
+```
+
+#### **3.2.2 State:**
+The `current_info` is changed to an object of type `PathInformation`
+
+```python
+class NullCleanupInfo(BaseModel):
+    nulls: list[Union[str, int]] = Field(
+        default=[],
+        description="List of values to treat as NULL."
+    )
+
+    nulls_report: list[Any] = Field(description="List of all the documents to add to vector db", default=[])
+```
+
+* **nulls_report:** it is just a list of the `documents` / `texts` which is later added to the vector database for querying. Each of the documents is of the format:
+
+```python
+txt = (
+    f"'{null}' identified as a disguised null, found {int(total_sum)} times in columns: "
+    f"{', '.join([str(i) for i in affected_cols])}"
+)
+```
+
+#### **3.2.3 Graph Flow + Visualisation:**
+The graph is almost identical to the File and Targets Subgraph, the only difference being that the `main node` (loader node) is replaced with the `null node`.
+
+The `null node` replaces the suspected null with the `pandas` standard `null`. It also records how many of each null is found and in which all columns, so that it may be stored and queried later.
+
+### 3.4 Type Validation Subgraph:
+#### **3.4.1 Aim:**
+This subgraph, determines the type and format of a column, given its first few entries, suspected type (whatever `pandas` loaded it as) and column name. It then decides the intended type and any formatting (E.g. suffixes, prefixes and formats for datetime)
+
+
+#### **3.4.2 State:**
+The `current_info` now takes the class of `ColParsingData`.
+
+```python
+class ColParsingData(BaseModel):
+    col_name: str = Field(description="Column name", default="")
+    df_path: str = Field(description="File path", default="")
+    col_type: Literal["numeric", "category", "text", "datetime", "timedelta"] = Field(description="Inferred type of column",
+                                                                         default="numeric")
+    col_formatting: Dict[str, str] = Field(
+        description="Formatting steps (prefix, suffix, or datetime-format)",
+        default_factory=dict
+    )
+    col_data: List[Any] = Field(description="List of first 20 elements in Column", default=[0] * 20)
+    col_error: str = Field(description="Error occurred during parsing", default="")
+    iterations: int = Field(description="Number of iterations performed", default=0)
+    max_iterations: int = Field(description="Maximum number of iterations performed", default=5)
+
+```
+All of the variable are described by their Field descriptions.
+
+#### **3.4.3 Graph Flow:**
+The Subgraph uses an llm to find the suspected type and formatting data of each column. It is a very small and simple subgraph which is visualised below, and is run for each and every column.
+
+
+#### **3.4.4 Graph Visualization:**
+```mermaid
+graph TD
+    %% Nodes & Shapes
+    START([START])
+    InferAndFix[infer_and_fix]
+    ValidateLogic{validate_logic}
+    END([END])
+
+    %% Standard Edges
+    START --> InferAndFix
+    InferAndFix --> ValidateLogic
+
+    %% Conditional Edges
+    ValidateLogic -->|loop| InferAndFix
+    ValidateLogic -->|done| END
+```
