@@ -12,6 +12,9 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
 3. **[Agentic Orchestration](#3-agentic-orchestration-the-langgraph-architecture)**
     - **[State Description](#31-state-of-langgraph)**
     - **[File and Targets Subgraph](#32-file-and-target-input-subgraph)**
+    - **[Null Analysis Subgraph](#33-disguised-null-identification-subgraph)**
+    - **[Type Validation Subgraph](#34-type-validation-subgraph)**
+    - **[Missingness Analysis Subgraph](#35-missingness-analysis-subgraph)**
 
 ## **3. Agentic Orchestration: The LangGraph Architecture**
 
