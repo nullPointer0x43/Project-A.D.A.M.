@@ -1,21 +1,21 @@
-# Project A.D.A.M. : Secure, Agentic Data Analysis & Automated Profiling
+# **Project A.D.A.M. : Secure, Agentic Data Analysis & Automated Profiling**
 
-## 1. Overview:
+## **1. Overview:**
 
 Project A.D.A.M. is a production-grade, containerized agent based platform designed to automate end-to-end exploratory data analysis (EDA), data cleaning, and statistical profiling. 
 
 By combining deterministic programmatic pipelines with LLM reasoning, the system takes raw, uncurated datasets and automatically generates comprehensive, insights-driven data reports with minimal human intervention.
 
-## 2. Table of Contents:
+## **2. Table of Contents:**
 1. **[Overview](#1-overview)**
 2. **[Table of Contents](#2-table-of-contents)**
 3. **[Agentic Orchestration](#3-agentic-orchestration-the-langgraph-architecture)**
     - **[State Description](#31-state-of-langgraph)**
     - **[File and Targets Subgraph](#32-file-and-target-input-subgraph)**
 
-## 3. Agentic Orchestration: The LangGraph Architecture
+## **3. Agentic Orchestration: The LangGraph Architecture**
 
-### 3.1 State of LangGraph:
+### **3.1 State of LangGraph:**
 LangGraph follows a state based architecture, where the only common data passed along the graph between the nodes exists in a data structure called the state of the graph.
 
 In this program the state of the graph is defined as follows:
@@ -51,7 +51,7 @@ All of the fields described in the classes are pretty self explanatory and are d
 * **User Input:** This contains the user input pulled from the frontend.
 * **Page Data:** This is a dictionary of the data required by the frontend for each page, such that it can be supplied whenever user switches between pages.
 
-### 3.2 File and Target Input Subgraph:
+### **3.2 File and Target Input Subgraph:**
 #### **3.2.1 Aim:**
 The aim of this node is to take the file path, the targets for analysis (just for marking, in case this is ever used in combination with an entire Auto-ML pipeline), and verify if the target columns exist within the specified file.
 
@@ -137,8 +137,8 @@ graph TD
     class RouterNode,ParseNode,MainNode,ConvoNode choice;
 ```
 
-### 3.3 Disguised Null Identification Subgraph:
-#### **3.2.1 Aim:**
+### **3.3 Disguised Null Identification Subgraph:**
+#### **3.3.1 Aim:**
 The aim of this node is to search and replace disguised nulls (E.g. -999, 'nothing', etc with the `pandas` standard `null`). It has a default list of nulls as follows, and additionally prompts the user to supply any addition nulls that might be present in the data.
 
 ```python
@@ -153,7 +153,7 @@ self.null_values = [
 ]
 ```
 
-#### **3.2.2 State:**
+#### **3.3.2 State:**
 The `current_info` is changed to an object of type `PathInformation`
 
 ```python
@@ -175,12 +175,12 @@ txt = (
 )
 ```
 
-#### **3.2.3 Graph Flow + Visualisation:**
+#### **3.3.3 Graph Flow + Visualisation:**
 The graph is almost identical to the File and Targets Subgraph, the only difference being that the `main node` (loader node) is replaced with the `null node`.
 
 The `null node` replaces the suspected null with the `pandas` standard `null`. It also records how many of each null is found and in which all columns, so that it may be stored and queried later.
 
-### 3.4 Type Validation Subgraph:
+### **3.4 Type Validation Subgraph:**
 #### **3.4.1 Aim:**
 This subgraph, determines the type and format of a column, given its first few entries, suspected type (whatever `pandas` loaded it as) and column name. It then decides the intended type and any formatting (E.g. suffixes, prefixes and formats for datetime)
 
