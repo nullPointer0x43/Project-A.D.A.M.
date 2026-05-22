@@ -1,4 +1,4 @@
-# **Project A.D.A.M. : Secure, Agentic Data Analysis & Automated Profiling**
+# **Project A.D.A.M. : Agentic Data Analysis Manager**
 
 ## **1. Overview:**
 
@@ -497,4 +497,22 @@ Based on the datatype of the column the following attributes are calculated:
 | metric | Selects robust optimization and validation tracking metrics that remain statistically resilient against heavy category skews. | Assigns metric pairings (e.g., MCC, PR-AUC, F1) based on severity |
 | handling | Outlines architectural recommendations (resampling pipelines or specialized loss weights) required to stabilize downstream classifiers. | Recommends algorithmic adjustments (e.g., SMOTE, EasyEnsemble, Weights) |
 
----
+3. **Statistical Tests Described above:**
+
+    - **3.1 Hartigan's Dip Test:**
+        - **Aim:** The presence of multimodality. It determines whether a continuous distribution has a single peak (unimodal) or multiple distinct peaks (multimodal).
+        - **Mathematical Background:**
+            - **Empirical Distribution Functions ($E_n$):** given a set of observations $x_1, x_2, x_3, \dots, x_n$. We start off by sorting all the values and then $E_n(x)$ for any given value $x$ is defined as: $E_n(x)$ = $\frac{\text{Number of elements} \leq x}{n}$
+            - **Unimodal Distribution:** Distribution function having only one mode.
+            - **Convex Function:** A function whose second derivative is always greater than 0, i.e. $\frac{d^2y}{dx^2} \geq 0$
+            - **Greatest Convex Minorant $(GCM)$:** The GCM is the highest possible convex function that sits entirely underneath or touches the Empirical CDF ($E_n$).
+            - **Least Convex Minorant $(LCM)$:** It is the lowest possible concave function that sits entirely on top of or touches the Empirical CDF.
+            - **Closest Unimodal Distribution: $(F)$** Given a distribution, assuming a mode $m$, we find the GCM between $x_{min}$ and $m$, and the LCM between $m$ and $x_{max}$. Then the closest unimodal distribution is the the afformentioned combination of LCM and GCM for the $m$ which minimises the error between itself and the given $E_n(x)$.
+            - **Monte Carlo Bootstrapping:** Generate a clean uniform sample of size $n$ using a random number generator. Compute its Dip Statistic.Repeat this loop $B$ times (typically $B = 5,000$ or $10,000$ iterations). <br />
+            Use these generated samples for calculating p-values as: $p\text{-value} = \frac{\sum_{b=1}^{B} \mathbb{I}(D_{b} \ge D_{obs})}{B}$
+        - **Mechanism:** The test finds the best-fitting unimodal distribution function ($F$) for the observed empirical cumulative distribution function ($E_n$). The Dip refers to the maximum vertical distance between these 2 functions.
+        - **Mathematical Formula:**
+        $$D_n = \inf_{F} (\sup_{x} \left| E_n(x) - F(x) \right|)$$
+        - **Null Hypothesis ($H_0$):** The distribution is unimodal (contains exactly one peak or mode).
+        - **Alternative Hypothesis ($H_1$):** The distribution is multimodal.
+        - **$P$-value:** Calculated by Monte Carlo Bootstrapping.
