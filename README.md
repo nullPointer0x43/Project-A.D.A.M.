@@ -427,10 +427,10 @@ Based on the datatype of the column the following attributes are calculated:
 
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
-| skew | Measures distribution asymmetry; positive implies a long right tail, negative a long left tail. | $$\gamma_1 = E\left[\left(\frac{X-\mu}{\sigma}\right)^3\right]$ |
+| skew | Measures distribution asymmetry; positive implies a long right tail, negative a long left tail. | $\gamma_1 = E\left[\left(\frac{X-\mu}{\sigma}\right)^3\right]$ |
 | kurtosis | Measures tail-heaviness (Fisher’s definition), highlighting extreme outlier density relative to a normal curve. | $$\gamma_2 = E\left[\left(\frac{X-\mu}{\sigma}\right)^4\right] - 3$$|
 | coeff_of_variation | Standardizes dispersion relative to the mean, allowing variance comparisons across columns with different scales. | $$CV = \frac{\sigma}{\mu}$$|
-| MAD | Median Absolute Deviation; a robust alternative to standard deviation showing average absolute distance around the center. | $$\text{Median}(\|X - \tilde{x}\$$|
+| MAD | Median Absolute Deviation; a robust alternative to standard deviation showing average absolute distance around the center. | $$\text{Median}(\|X - \tilde{x}\|)$$|
 | distribution_type | Categorizes the global data shape into left-skewed, right-skewed, multi-modal, uniform, or symmetric. | Calculated using Hartigan's Dip Test $p$-value and $\gamma_1$ bounds |
 | normal | Evaluates whether the column matches a normal (Gaussian) bell curve at the designated significance level. | Shapiro-Wilk ($n < 5000$) else D'Agostino-Pearson $p\text{-value} > \alpha$ |
 
@@ -438,7 +438,7 @@ Based on the datatype of the column the following attributes are calculated:
 
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
-| percentiles | Identifies value thresholds below which a specific percentage $p$ of the data points fall. | $$Q(p) = x \text{ where } P(X \le x) = p \\ \text{for } p \in \{0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99\}$$|
+| percentiles | Identifies value thresholds below which a specific percentage $p$ of the data points fall. | $Q(p) = x \text{ where } P(X \le x) = p \\ \text{for } p \in \{0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99\}$|
 | iqr | Interquartile Range; captures the spread of the middle 50% of the dataset. | $$IQR = Q_{0.75} - Q_{0.25}$$|
 | range | The absolute mathematical distance between the absolute maximum and minimum values. | $$\text{Max}(X) - \text{Min}(X)$$|
 | extreme_outliers | Flags severe right-tail spikes where the max value dwarfs the middle spread by an order of magnitude. | $$Q_{0.99} > 3 \cdot IQR \land \text{Max}(X) > 3 \cdot IQR$$|
