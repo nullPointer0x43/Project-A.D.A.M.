@@ -53,7 +53,7 @@ The most conservative approach possible. It aims to guarantee that the probabili
 * Pros: Extremely safe. If it says a feature is significant, it means that with sureity that the probability of being wrong is $< (\alpha \times 100) \%$.
 * Cons: It drives the threshold so low that it causes a massive spike in the number of Type 2 errors (Falsely sticking to $H_0$).
 
-#### **3.3.2 Benjamini-Hochberg Correction
+#### **3.3.2 Benjamini-Hochberg Correction:**
 Instead of ensuring zero false positives, Benjamini-Hochberg (BH) controls the proportion of discoveries that are fake. If you set your False Discovery Rate (FDR) to $5\%$, it means you are completely fine if $5\%$ of your final accepted discoveries are false positives.
 * **The Method:** Sort all your $m$ individual $p$-values in ascending order ($p_1 \le p_2 \le \dots \le p_m$). Assign each a rank $i$ (from $1$ to $m$). Find the largest rank $k$ such that:
 $$p_i \le \left(\frac{i}{m}\right) \alpha$$
@@ -404,7 +404,7 @@ Based on the datatype of the column the following attributes are calculated:
 
 1. **Numerical Datatype: (Numeric, Datetime, Timedelta)**
     - **Central Tendency & Basic Dispersion:**
-        - `Mean:` The arithmetic average of all values in the column.
+        - `Mean:` The arithmetic average of all values in the column.<br/>
         $$\mu = \frac{1}{n} \sum_{i=1}^{n} x_i$$
         - `Median:` The exact middle value of the data when arranged in ascending order.
         - `Mode:` The most frequently occurring value (or values) in the dataset.
@@ -421,7 +421,7 @@ Based on the datatype of the column the following attributes are calculated:
     - **Advanced Shape and Distribution Metrics:**
         - `skew:` Measures asymmetry; positive values mean a long right tail, negative mean a long left tail.
         $$\gamma_1 = E\left[\left(\frac{X-\mu}{\sigma}\right)^3\right]$$
-        - `kurtosis:` Measures tail-thickness, indicating the presence of extreme outliers relative to a normal distribution.
+        - `kurtosis:` Measures tail-thickness, indicating the presence of extreme outliers relative to a normal distribution.<br/>
         $$\beta_2 - 3 = E\left[\left(\frac{X-\mu}{\sigma}\right)^4\right] - 3$$
         - `coeff_of_variation:` Standardizes dispersion relative to the mean, allowing variance comparisons across columns with different scales.
         $$CV = \frac{\sigma}{\mu}$$
