@@ -564,7 +564,7 @@ graph TD
 
     CalcExp(Calculate Expected)
 
-    Chi2($$\chi^2$$)
+    Chi2($$X^2$$)
     Cramer1[Cramer's V]
 
     G(G-test)
@@ -594,7 +594,7 @@ graph TD
     CalcExp --> | $$E \geq 5$$ | Chi2
     Chi2 --> Cramer1
 
-    CalcExp --> | $$E \lt 5$$ | G
+    CalcExp --> | $E \lt 5$ | G
     G --> Cramer2
 
     CalcExp --> | bool x bool | Fisher
@@ -676,3 +676,4 @@ graph TD
     .7 --> Krusskal
     Krusskal --> Rank2
 ```
+
