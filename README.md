@@ -49,7 +49,8 @@ If we don't correct your significance level when running multiple tests, the pip
 
 #### **3.3.1 Bonferroni Correction (Controls Family-Wise Error Rate):**
 The most conservative approach possible. It aims to guarantee that the probability of getting even a single false positive across your entire family of tests is less than $\alpha$.
-* The Math: Divide the original significance level by the total number of tests ($m$):$$\alpha_{\text{new}} = \frac{\alpha_{\text{original}}}{m}$$
+* The Math: Divide the original significance level by the total number of tests ($m$):
+$$\alpha_{\text{new}} = \frac{\alpha_{\text{original}}}{m}$$
 * Pros: Extremely safe. If it says a feature is significant, it means that with sureity that the probability of being wrong is $< (\alpha \times 100) \%$.
 * Cons: It drives the threshold so low that it causes a massive spike in the number of Type 2 errors (Falsely sticking to $H_0$).
 
@@ -462,7 +463,7 @@ Based on the datatype of the column the following attributes are calculated:
 | Attribute | Explanation | Formula |
 | --- | --- | --- |
 | cardinality | Counts the number of unique categorical classes present in the column. | - |
-| suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $ c \in U : \text{Count}(c) < 50 $ |
+| suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $c \in U : \text{Count}(c) < 50$ |
 | cardinality_after_merge | Computes the prospective unique class count assuming all low-representation categories are collapsed into a single unified bin. | - |
 | cardinality_tier | Broadly categorizes the column's variety density into discrete operational tiers (binary, low, medium, high, very-high). | Conditional bins on cardinality at thresholds: $2, 10, 50, 200$ |
 | encoding | Recommends an optimal machine learning vectorization strategy based on the feature's dynamic cardinality profile. | Map to label, OHE, target, or hashing based on tier bounds |
@@ -473,8 +474,8 @@ Based on the datatype of the column the following attributes are calculated:
 | --- | --- | --- |
 | frequency | A foundational distribution mapping tracking raw value occurrences alongside their relative representation metrics. | - |
 | rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $c \in U : \text{Percent}(c) < 1\%$ |
-| binary_flag | A Boolean indicator that flags whether the feature space is strictly composed of exactly two distinct categories. | $\text{True if } cardinality = 2$ |
-| high_card_flag | Signals whether the categorical feature features a dense variety boundary that could trigger dimensionality explosions. | $\text{True if } cardinality > 50$ |
+| binary_flag | A Boolean indicator that flags whether the feature space is strictly composed of exactly two distinct categories. | True if cardinality = 2 |
+| high_card_flag | Signals whether the categorical feature features a dense variety boundary that could trigger dimensionality explosions. | True if cardinality > 50 |
 | suspected_text | Flags columns containing long free-form natural language strings rather than structured categorical labels. | - |
 
 * **Information Theory & Information Concentration Metrics:**
