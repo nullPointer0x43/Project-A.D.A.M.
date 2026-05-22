@@ -409,7 +409,7 @@ Based on the datatype of the column the following attributes are calculated:
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
 | Mean | The arithmetic average of all values in the column. | $$\mu = \frac{1}{n} \sum_{i=1}^{n} x_i$$|
-|Median | The exact middle value of the dataset when arranged in ascending order. | $\tilde{x} = \begin{cases} x_{\frac{n+1}{2}} & n \text{ is odd} \\frac{1}{2}\left(x_{\frac{n}{2}} + x_{\frac{n}{2}+1}\right) & n \text{ is even} \end{cases}$ |
+|Median | The exact middle value of the dataset when arranged in ascending order. | $\tilde{x} = \begin{cases} x_{\frac{n+1}{2}} & n \text{ is odd} \\ \frac{x_{\frac{n}{2}} + x_{\frac{n}{2}+1}}{2} & n \text{ is even} \end{cases}$ |
 | Mode | The most frequently occurring value (or values) in the column vector. | $$\arg\max_{x} \text{Count}(x)$$|
 |Standard Deviation | Measures the average distance of individual data points from the column's mean. | $$\sigma = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2}$$|
 | Variance | The average of the squared deviations from the mean, quantifying overall data spread. | $$\sigma^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2$$|
