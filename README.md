@@ -440,12 +440,12 @@ Based on the datatype of the column the following attributes are calculated:
 |    `percentiles`   |                     Identifies value thresholds below which a specific percentage of the data falls.                    | $Q(p)$ = $x$ where $P(X \le x)$ = $p$ for $p \in \{0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99\}$ |
 |        `iqr`       |           Captures the spread of the middle 50% of your data by subtracting the 25th percentile from the 75th.          |                                         $IQR = Q_3 - Q_1$                                        |
 |       `range`      |       $\text{Max}(X) - \text{Min}(X)$The absolute distance between the largest and smallest values in the column.       |                                  $\text{Max}(X) - \text{Min}(X)$                                 |
-| `extreme_outliers` |           Flags extreme positive tail values that dwarf the middle spread of the dataset by a factor of three.          |                    $Q_{0.99} > 3 \cdot IQR \land \text{Max}(X) > 3 \cdot IQR$                    |
-|   `IQR_outliers`   |        Filters for values that sit significantly outside the standard interquartile boundaries (Tukey's Fences).        |               $\{x \in X : x < Q_1 - 1.5 \cdot IQR \lor x > Q_3 + 1.5 \cdot IQR\}$               |
+| `extreme_outliers` |           Flags extreme positive tail values that dwarf the middle spread of the dataset by a factor of three.          |                    $Q_{0.99} > 3 \cdot IQR$ and $\text{Max}(X) > 3 \cdot IQR$                    |
+|   `IQR_outliers`   |        Filters for values that sit significantly outside the standard interquartile boundaries (Tukey's Fences).        |               $x \in X : x < Q_1 - 1.5 \cdot IQR   \text{ or } x > Q_3 + 1.5 \cdot IQR$               |
 |      `IQR_pc`      |                                        Percentage of the number of IQR outliers.                                        |                                  $\frac{\text{IQR outliers}}{n} \times 100 \%$                                 |
 |    `Z_outliers`    | Identifies rows with a standard score greater than 3, meaning they live more than 3 standard deviations above the mean. |                             $\{x \in X : \frac{x-\mu}{\sigma} > 3\}$                             |
 |       `Z_pc`       |                                         Percentage of the number of Z outliers.                                         |                                   $\frac{\text{Z outliers}}{n} \times 100 \%$                                  |
-|   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if $IQR\_pc > 0.05 \lor Z\_pc > 0.05$                            |
+|   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if $IQR\_pc > 0.05 \text{ or } Z\_pc > 0.05$                            |
 |     `bottom_5`     |                            Returns the five smallest numerical values present in the column.                            |                                  First 5 elements of sorted $X$                                  |
 |       `top_5`      |                             Returns the five largest numerical values present in the column.                            |                                   Last 5 elements of sorted $X$                                  |
 
@@ -459,7 +459,7 @@ Based on the datatype of the column the following attributes are calculated:
 
 * **Structural Cardinality & Encoding Framework:**
 
-| Attribute | Explanation | Formula / Condition |
+| Attribute | Explanation | Formula |
 | --- | --- | --- |
 | cardinality | Counts the number of unique categorical classes present in the column. | - |
 | suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $\{c \in U : \text{Count}(c) < 50\}$ |
@@ -471,8 +471,8 @@ Based on the datatype of the column the following attributes are calculated:
 
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
-| frequency | A foundational distribution mapping tracking raw value occurrences alongside their relative representation metrics. | $\text{DataFrame}[\text{Count}(c), \text{Percent}(c)] \quad \forall c \in U$ |
-| rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $ \{ c \in U : \text{Percent}(c) < 1\% \} $ |
+| frequency | A foundational distribution mapping tracking raw value occurrences alongside their relative representation metrics. | - |
+| rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $ c \in U : \text{Percent}(c) < 1\% $ |
 | binary_flag | A Boolean indicator that flags whether the feature space is strictly composed of exactly two distinct categories. | $\text{True if } cardinality = 2$ |
 | high_card_flag | Signals whether the categorical feature features a dense variety boundary that could trigger dimensionality explosions. | $\text{True if } cardinality > 50$ |
 | suspected_text | Flags columns containing long free-form natural language strings rather than structured categorical labels. | - |
