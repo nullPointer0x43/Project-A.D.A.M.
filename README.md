@@ -511,8 +511,20 @@ Based on the datatype of the column the following attributes are calculated:
             - **Monte Carlo Bootstrapping:** Generate a clean uniform sample of size $n$ using a random number generator. Compute its Dip Statistic.Repeat this loop $B$ times (typically $B = 5,000$ or $10,000$ iterations). <br />
             Use these generated samples for calculating p-values as: $p\text{-value} = \frac{\sum_{b=1}^{B} \mathbb{I}(D_{b} \ge D_{obs})}{B}$
         - **Mechanism:** The test finds the best-fitting unimodal distribution function ($F$) for the observed empirical cumulative distribution function ($E_n$). The Dip refers to the maximum vertical distance between these 2 functions.
-        - **Mathematical Formula:**
+        - **Mathematical Formula:**<br />
         $$D_n = \inf_{F} (\sup_{x} \left| E_n(x) - F(x) \right|)$$
         - **Null Hypothesis ($H_0$):** The distribution is unimodal (contains exactly one peak or mode).
         - **Alternative Hypothesis ($H_1$):** The distribution is multimodal.
         - **$P$-value:** Calculated by Monte Carlo Bootstrapping.
+    - **D'Agostino's $K^2$ Test:**
+        - **Aim:** Evaluates normality across large datasets ($n \ge 5000$). It measures descriptive shape deviations by evaluating whether a column's skewness and kurtosis match a normal profile.
+        - **Mathematical Background:**
+            - Z-Score Transformations ($Z_1, Z_2$): Because raw sample metrics  do not scale linearly with sample size, D'Agostino uses complex curve-fitting transformations (incorporating sample-size dependent means and variances) to cleanly scale both metrics to match standard normal distributions.
+        - **Mathematical Formula:**<br/>
+             $$K^2 = Z^2(\sqrt{b_1}) + Z^2(b_2)$$
+            - $Z(\sqrt{b_1})$ is the standard normal transformation of the sample skewness.
+            - $Z(b_2)$ is the standard normal transformation of the sample kurtosis.
+        - **Null Hypothesis ($H_0$):** The sample population exhibits a normal distribution shape (skewness = 0, excess kurtosis = 0).
+        - **Alternative Hypothesis ($H_1$):** The sample population is non-normal due to asymmetric skew, anomalous tail-heaviness, or both.
+        - **$P$-value:** Computed by mapping the final $K^2$ statistic directly onto a Chi-squared ($\chi^2$) probability survival function with exactly $2$ degrees of freedom: $P(\chi^2_2 \ge K^2)$
+    - **Shapiro Wilk test:**
