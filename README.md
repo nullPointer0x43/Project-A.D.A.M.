@@ -404,62 +404,63 @@ Based on the datatype of the column the following attributes are calculated:
 
 1. **Numerical Datatype: (Numeric, Datetime, Timedelta)**
 
-* **Central Tendency & Basic Dispersion:**
+- **Central Tendency & Basic Dispersion:**
 
-| Attribute | Explanation | Formula / Condition |
-| --- | --- | --- |
-| Mean | The arithmetic average of all values in the column. | $$\mu = \frac{1}{n} \sum_{i=1}^{n} x_i$$|
-|Median | The exact middle value of the dataset when arranged in ascending order. | $\tilde{x} = x_{(n+1)/2} \text{ if } n \text{ is odd}$ <br/> $\tilde{x} =\frac{1}{2}(x_{n/2} + x_{n/2+1}) \text{ if } n \text{ is even}$ |
-| Mode | The most frequently occurring value (or values) in the column vector. | $$\arg\max_{x} \text{Count}(x)$$|
-|Standard Deviation | Measures the average distance of individual data points from the column's mean. | $$\sigma = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2}$$|
-| Variance | The average of the squared deviations from the mean, quantifying overall data spread. | $$\sigma^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2$$|
+|       Attribute      |                                      Explanation                                      |                             Formula                            |
+|:--------------------:|:-------------------------------------------------------------------------------------:|:--------------------------------------------------------------:|
+|        `Mean`        |                  The arithmetic average of all values in the column.                  |            $$\mu = \frac{1}{n} \sum_{i=1}^{n} x_i$$            |
+|       `Median`       |          The exact middle value of the data when arranged in ascending order.         |       -       |
+|        `Mode`        |            The most frequently occurring value (or values) in the dataset.            |                                -                               |
+| `Standard Deviation` |          Measures the average distance of data points from the column's mean.         | $$\sigma = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2}$$ |
+|      `Variance`      | The average of the squared deviations from the mean, quantifying overall data spread. |                           $\sigma^2$                           |
+- **Metadata & Structural Checks:**
 
-* **Metadata & Structural Checks:**
+|    Attribute   |                                               Explanation                                              |           Formula          |
+|:--------------:|:------------------------------------------------------------------------------------------------------:|:--------------------------:|
+| `low_variance` |   Flags whether the column is nearly constant, meaning it contains very little informational variety.  | $$\text{Var}(X) \le 0.05$$ |
+|     `is_id`    | A flag checking if variance is exceptionally high, typically used to screen for auto-incrementing IDs. |  $$\text{Var}(X) > 0.95$$  |
+|    `singage`   |                Classifies the data values as purely positive, purely negative, or mixed.               |              -             |
+|     `zero`     |                  Flags whether the number zero is present anywhere within the column.                  |              -             |
 
-| Attribute | Explanation | Formula / Condition |
-| --- | --- | --- |
-| low_variance | Flags whether the column is nearly constant, containing negligible informational variety. | $$\text{Var}(X) \le 0.05$$|
-| is_id | Identifies whether the sequence behaves like an auto-incrementing database primary key. | All Unique $\land$ Diffs Regular $\land$ Cardinality = $n$|
-| signage | Classifies the underlying data values as purely positive, purely negative, or mixed. | $$\text{Map to } \{\text{"positive"}, \text{"negative"}, \text{"mixed"}\}$$|
-| zero | A Boolean indicator flagging if the exact value of zero is present within the column. | $$\exists \, x_i \in X : x_i = 0$$|
+- **Advanced Shape and Distribution Metrics:**
 
-* **Advanced Shape & Distribution Metrics:**
-
-| Attribute | Explanation | Formula / Condition |
-| --- | --- | --- |
-| skew | Measures distribution asymmetry; positive implies a long right tail, negative a long left tail. | $\gamma_1 = E\left[\left(\frac{X-\mu}{\sigma}\right)^3\right]$ |
-| kurtosis | Measures tail-heaviness (Fisher’s definition), highlighting extreme outlier density relative to a normal curve. | $$\gamma_2 = E\left[\left(\frac{X-\mu}{\sigma}\right)^4\right] - 3$$|
-| coeff_of_variation | Standardizes dispersion relative to the mean, allowing variance comparisons across columns with different scales. | $$CV = \frac{\sigma}{\mu}$$|
-| MAD | Median Absolute Deviation; a robust alternative to standard deviation showing average absolute distance around the center. | $$\text{Median}(\|X - \tilde{x}\|)$$|
-| distribution_type | Categorizes the global data shape into left-skewed, right-skewed, multi-modal, uniform, or symmetric. | Calculated using Hartigan's Dip Test $p$-value and $\gamma_1$ bounds |
-| normal | Evaluates whether the column matches a normal (Gaussian) bell curve at the designated significance level. | Shapiro-Wilk ($n < 5000$) else D'Agostino-Pearson $p\text{-value} > \alpha$ |
+|       Attribute      |                                                          Explanation                                                          |                                             Formula                                            |
+|:--------------------:|:-----------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------:|
+|        `skew`        |                  Measures asymmetry; positive values mean a long right tail, negative mean a long left tail.                  |                 $\gamma_1 = E\left[\left(\frac{X-\mu}{\sigma}\right)^3\right]$                 |
+|      `kurtosis`      | Measures tail-heaviness (Fisher’s definition), indicating the presence of extreme outliers relative to a normal distribution. |              $\beta_2 - 3 = E\left[\left(\frac{X-\mu}{\sigma}\right)^4\right] - 3$             |
+| `coeff_of_variation` |       Standardizes dispersion relative to the mean, allowing variance comparisons across columns with different scales.       |                                    $CV = \frac{\sigma}{\mu}$                                   |
+|         `MAD`        |                                       Shows average absolute distance around the center.                                      |                                  $\text{Median}(\|X - \mu\|)$                                  |
+| `distribution_type`  | Categorizes the data's shape into left-skewed, right-skewed, multi-modal, uniform, or symmetric.                              | Hartigan's Dip Test                                                                            |
+| `normal`             | Evaluates whether the column matches a normal (Gaussian) bell curve shape at the chosen confidence level.                     | Shapiro-Wilk $p$-value $> \alpha$ (if $n < 5000$) else D'Agostino-Pearson $p$-value $> \alpha$ |
 
 * **Range, Percentiles & Outlier Assessment:**
 
-| Attribute | Explanation | Formula / Condition |
-| --- | --- | --- |
-| percentiles | Identifies value thresholds below which a specific percentage $p$ of the data points fall. | $Q(p) = x \text{ where } P(X \le x) = p \\ \text{for } p \in \{0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99\}$|
-| iqr | Interquartile Range; captures the spread of the middle 50% of the dataset. | $$IQR = Q_{0.75} - Q_{0.25}$$|
-| range | The absolute mathematical distance between the absolute maximum and minimum values. | $$\text{Max}(X) - \text{Min}(X)$$|
-| extreme_outliers | Flags severe right-tail spikes where the max value dwarfs the middle spread by an order of magnitude. | $$Q_{0.99} > 3 \cdot IQR \land \text{Max}(X) > 3 \cdot IQR$$|
-| IQR_outliers | Isolates data points that reside far outside standard interquartile fences (Tukey's method). | $$\{x \in X : x < Q_{0.25} - 1.5 \cdot IQR \lor x > Q_{0.75} + 1.5 \cdot IQR\}$$|
-| IQR_pc | The percentage of rows in the dataset flagged as standard Tukey IQR outliers. | $$\frac{\|\text{IQR\_outliers}\|}{n} \times 100$$|
-| Z_outliers | Identifies records carrying an absolute standard score greater than 3 (more than 3 standard deviations away). | $$\left\{x \in X : \left\|\frac{x-\mu}{\sigma}\right\| > 3\right$$|
-| Z_pc | The percentage of records in the dataset flagged as traditional Z-score outliers. | $$\frac{\|\text{Z\_outliers}\|}{n} \times 100$$|
-| outlier_flag | A systemic binary flag that trips if more than 5% of the total dataset is flagged by either outlier framework. | $$\text{True if } IQR\_pc > 5.0\% \lor Z\_pc > 5.0\%$$|
-| bottom_5 | Returns the five lowest sorted numerical values present in the column matrix. | First 5 index elements of sorted vector $X_{asc}$ |
-| top_5 | Returns the five highest sorted numerical values present in the column matrix. | Last 5 index elements of sorted vector $X_{asc}$ |
+|      Attribute     |                                                       Explanation                                                       |                                              Formula                                             |
+|:---:|:---:|:---:|
+|    `percentiles`   |                     Identifies value thresholds below which a specific percentage of the data falls.                    | $Q(p)$ = $x$ where $P(X \le x)$ = $p$ for $p \in \{0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99\}$ |
+|        `iqr`       |           Captures the spread of the middle 50% of your data by subtracting the 25th percentile from the 75th.          |                                         $IQR = Q_3 - Q_1$                                        |
+|       `range`      |       $\text{Max}(X) - \text{Min}(X)$The absolute distance between the largest and smallest values in the column.       |                                  $\text{Max}(X) - \text{Min}(X)$                                 |
+| `extreme_outliers` |           Flags extreme positive tail values that dwarf the middle spread of the dataset by a factor of three.          |                    $Q_{0.99} > 3 \cdot IQR \land \text{Max}(X) > 3 \cdot IQR$                    |
+|   `IQR_outliers`   |        Filters for values that sit significantly outside the standard interquartile boundaries (Tukey's Fences).        |               $\{x \in X : x < Q_1 - 1.5 \cdot IQR \lor x > Q_3 + 1.5 \cdot IQR\}$               |
+|      `IQR_pc`      |                                        Percentage of the number of IQR outliers.                                        |                                  $\frac{\text{IQR\_outlier}}{n} \times 100 \%$                                 |
+|    `Z_outliers`    | Identifies rows with a standard score greater than 3, meaning they live more than 3 standard deviations above the mean. |                             $\{x \in X : \frac{x-\mu}{\sigma} > 3\}$                             |
+|       `Z_pc`       |                                         Percentage of the number of Z outliers.                                         |                                   $\frac{\text{Z\_outliers}}{n} \times 100 \%$                                  |
+|   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if $IQR\_pc > 0.05 \lor Z\_pc > 0.05$                            |
+|     `bottom_5`     |                            Returns the five smallest numerical values present in the column.                            |                                  First 5 elements of sorted $X$                                  |
+|       `top_5`      |                             Returns the five largest numerical values present in the column.                            |                                   Last 5 elements of sorted $X$                                  |
 
 * **Feature Engineering Recommendation**
 
-| Attribute | Explanation | Formula / Condition |
-| --- | --- | --- |
-| transform | Proposes a mathematical transformation to stabilize variance and normalize heavy skews based on distribution limits. | If $\gamma_1 > 1.0 \land \text{Min}(X) > 0 \rightarrow \text{"log" or "box-cox"}$<br/>If $\gamma_1 > 1.0 \land \text{Min}(X) = 0 \rightarrow \text{"yeo-johnson" or "sqrt"}$ |
-
+|      Attribute     |                                                       Explanation                                                       |                                Formula                               |
+|:---:|:---:|:---:|
+|     `transform`    |   Recommends a data transformation strategy (like log, sqrt, or reciprocal) to normalize heavily skewed distributions.  |                                   -                                  |
 
 2. **Categorical Datatype:**
 Here is the structured breakdown of the attributes calculated in your categoricalColumnAnalysis function, formatted precisely according to your structural schema.
 
+---
+
+## 2. Categorical Datatype: (Object, Category)
 
 * **Structural Cardinality & Encoding Framework:**
 
@@ -467,7 +468,7 @@ Here is the structured breakdown of the attributes calculated in your categorica
 | --- | --- | --- |
 | cardinality | Counts the number of unique categorical classes present in the column. | - |
 | suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $\{c \in U : \text{Count}(c) < 50\}$ |
-| cardinality_after_merge | Computes the prospective unique class count assuming all low-representation categories are collapsed into a single unified bin. | - |
+| cardinality_after_merge | Computes the prospective unique class count assuming all low-representation categories are collapsed into a single unified bin. | $ |
 | cardinality_tier | Broadly categorizes the column's variety density into discrete operational tiers (binary, low, medium, high, very-high). | Conditional bins on cardinality at thresholds: $2, 10, 50, 200$ |
 | encoding | Recommends an optimal machine learning vectorization strategy based on the feature's dynamic cardinality profile. | Map to label, OHE, target, or hashing based on tier bounds |
 
@@ -486,8 +487,8 @@ Here is the structured breakdown of the attributes calculated in your categorica
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
 | top-percentages | Calculates the running cumulative distribution share dominated by the largest 1, 3, and 5 categories. | $\sum_{j=1}^{i} \text{Percent}(c_j) \text{ for } i \in \{1, 3, 5\} \text{ sorted descending}$ |
-| entropy | Evaluates structural uncertainty normalized by total unique cardinality; a value near 1 implies a perfectly uniform class distribution. | $H_{norm}(X) = \frac{-\sum_{c \in U} p(c) \log_2 p(c)}{\log_2(\| U \|)}$ |
-| gini | Computes the operational impurity profile, standardized against the maximum achievable diversity boundary of the categorical shape. | $$G_{norm}(X) = \frac{1 - \sum_{c \in U} p(c)^2}{1 - \frac{1}{\| U \|}}$$ |
+| entropy | Evaluates structural uncertainty normalized by total unique cardinality; a value near 1 implies a perfectly uniform class distribution. | $H_{norm}(X) = \frac{-\sum_{c \in U} p(c) \log_2 p(c)}{\log_2( |
+| gini | Computes the operational impurity profile, standardized against the maximum achievable diversity boundary of the categorical shape. | $G_{norm}(X) = \frac{1 - \sum_{c \in U} p(c)^2}{1 - \frac{1}{ |
 
 * **Target Variable Imbalance Assessment:**
 
@@ -500,3 +501,4 @@ Here is the structured breakdown of the attributes calculated in your categorica
 | metric | Selects robust optimization and validation tracking metrics that remain statistically resilient against heavy category skews. | Assigns metric pairings (e.g., MCC, PR-AUC, F1) based on severity |
 | handling | Outlines architectural recommendations (resampling pipelines or specialized loss weights) required to stabilize downstream classifiers. | Recommends algorithmic adjustments (e.g., SMOTE, EasyEnsemble, Weights) |
 
+---
