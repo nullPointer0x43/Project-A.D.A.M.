@@ -409,7 +409,7 @@ Based on the datatype of the column the following attributes are calculated:
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
 | Mean | The arithmetic average of all values in the column. | $$\mu = \frac{1}{n} \sum_{i=1}^{n} x_i$$|
-|Median | The exact middle value of the dataset when arranged in ascending order. | $\tilde{x} = \begin{cases} x_{\frac{n+1}{2}} & n \text{ is odd} \\ \frac{1}{2}\left(x_{\frac{n}{2}} + x_{\frac{n}{2}+1}\right) & n \text{ is even} \end{cases}$ |
+|Median | The exact middle value of the dataset when arranged in ascending order. | $\tilde{x} = \begin{cases} x_{\frac{n+1}{2}} & n \text{ is odd} \\frac{1}{2}\left(x_{\frac{n}{2}} + x_{\frac{n}{2}+1}\right) & n \text{ is even} \end{cases}$ |
 | Mode | The most frequently occurring value (or values) in the column vector. | $$\arg\max_{x} \text{Count}(x)$$|
 |Standard Deviation | Measures the average distance of individual data points from the column's mean. | $$\sigma = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2}$$|
 | Variance | The average of the squared deviations from the mean, quantifying overall data spread. | $$\sigma^2 = \frac{1}{n-1} \sum_{i=1}^{n} (x_i - \mu)^2$$|
@@ -419,7 +419,7 @@ Based on the datatype of the column the following attributes are calculated:
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
 | low_variance | Flags whether the column is nearly constant, containing negligible informational variety. | $$\text{Var}(X) \le 0.05$$|
-| is_id | Identifies whether the sequence behaves like an auto-incrementing database primary key. | $$\text{All Unique} \land \text{Diffs Regular} \land \text{Cardinality} = n$$|
+| is_id | Identifies whether the sequence behaves like an auto-incrementing database primary key. | $\text{All Unique} \land \text{Diffs Regular} \land \text{Cardinality} = n$|
 | signage | Classifies the underlying data values as purely positive, purely negative, or mixed. | $$\text{Map to } \{\text{"positive"}, \text{"negative"}, \text{"mixed"}\}$$|
 | zero | A Boolean indicator flagging if the exact value of zero is present within the column. | $$\exists \, x_i \in X : x_i = 0$$|
 
