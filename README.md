@@ -545,3 +545,134 @@ Based on the datatype of the column the following attributes are calculated:
         - **Null Hypothesis ($H_0$):** The sample data is normally distributed.
         - **Alternative Hypothesis ($H_1$):** The sample data is non-normally distributed.
         - **$P$-value:** Calculated by matching the computed $W$ statistic against the empirical, non-standardized sampling distribution of $W$ under a true null hypothesis.
+
+---
+
+### **4.7 Multivariate Analysis:**
+#### **4.7.1 Aim:**
+The aim of this subgraph is to find and store all the multivariate statistics (statistics which signify relations between variables).
+
+#### **4.7.2 Graph Flow + Theory:**
+
+```mermaid
+graph TD
+    %% Nodes & Shapes
+    START([START])
+
+    Type[Classify Type of Interaction]
+    CatCat[Category x Category]
+
+    CalcExp(Calculate Expected)
+
+    Chi2($$\chi^2$$)
+    Cramer1[Cramer's V]
+
+    G(G-test)
+    Cramer2[Cramer's V]
+
+    Fisher(Fisher's Exact)
+    Odd[Odd's Ratio]
+
+    NumNum[Numeric x Numeric]
+
+    Pearson(Pearson Ratio)
+    FisherZ[Fisher Z]
+
+    Spearman(Spearman Ratio)
+    Bootstrap[Bootstrapping]
+
+    NumCat[Numeric x Category]
+
+    %% Standard Edges
+    START --> Type
+    Type --> CatCat
+    Type --> NumNum
+    Type --> NumCat
+
+    CatCat --> CalcExp
+
+    CalcExp --> | $$E \geq 5$$ | Chi2
+    Chi2 --> Cramer1
+
+    CalcExp --> | $$E \lt 5$$ | G
+    G --> Cramer2
+
+    CalcExp --> | bool x bool | Fisher
+    Fisher --> Odd
+
+    NumNum --> |"normal & outlier% < 5%"| Pearson
+    Pearson --> FisherZ
+
+    NumNum --> |else| Spearman
+    Spearman --> Bootstrap
+```
+
+```mermaid
+graph TD
+    NumCat[Numeric x Category]
+
+    .1@{ shape: f-circ, label: "Junction" }
+    .2@{ shape: f-circ, label: "Junction" }
+    .3@{ shape: f-circ, label: "Junction" }
+    .4@{ shape: f-circ, label: "Junction" }
+    .5@{ shape: f-circ, label: "Junction" }
+    .6@{ shape: f-circ, label: "Junction" }
+    .7@{ shape: f-circ, label: "Junction" }
+    .8@{ shape: f-circ, label: "Junction" }
+    .9@{ shape: f-circ, label: "Junction" }
+    .10@{ shape: f-circ, label: "Junction" }
+    .11@{ shape: f-circ, label: "Junction" }
+
+    t_Test[2-sample T-Test]
+    Cohen1[Cohen's D]
+
+    WelcheT[Welche Corrected<br/> T-Test]
+    Cohen2[Cohen's D]
+
+    ANOVA[One Way ANOVA]
+    Eta1[$$\eta^2$$]
+
+    WelcheANOVA[Welche corrected ANOVA]
+    Eta2[$$\eta^2$$]    
+
+    Mann[Mann Whitney]
+    Rank1[Rank Biserial R]
+
+    Krusskal[Krusskal Wallis]
+    Rank2[Rank Biserial R]
+
+    NumCat --- .1
+    .1 --- |is normal| .2
+
+    .2 --- |all groups have equal var| .4
+    .4 --- |2 groups| .8
+    .4 --- |+3 groups| .9
+
+    .2 --- |else| .5
+    .5 --- |2 groups| .10
+    .5 --- |+3 groups| .11
+
+
+    .1 --- |else| .3
+    
+    .3 --- |2 groups| .6
+    .3 --- |+3 groups| .7
+
+    .8 --> t_Test
+    t_Test --> Cohen1
+
+    .9 --> ANOVA
+    ANOVA --> Eta1
+
+    .10 --> WelcheT
+    WelcheT --> Cohen2
+
+    .11 --> WelcheANOVA
+    WelcheANOVA --> Eta2
+
+    .6 --> Mann
+    Mann --> Rank1
+
+    .7 --> Krusskal
+    Krusskal --> Rank2
+```
