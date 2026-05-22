@@ -445,7 +445,7 @@ Based on the datatype of the column the following attributes are calculated:
 |      `IQR_pc`      |                                        Percentage of the number of IQR outliers.                                        |                                  $\frac{\text{IQR outliers}}{n} \times 100 \%$                                 |
 |    `Z_outliers`    | Identifies rows with a standard score greater than 3, meaning they live more than 3 standard deviations above the mean. |                             $\{x \in X : \frac{x-\mu}{\sigma} > 3\}$                             |
 |       `Z_pc`       |                                         Percentage of the number of Z outliers.                                         |                                   $\frac{\text{Z outliers}}{n} \times 100 \%$                                  |
-|   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if $IQR\_pc > 0.05 \text{ or } Z\_pc > 0.05$                            |
+|   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if IQR_pc > 0.05 or Z_pc > 0.05                           |
 |     `bottom_5`     |                            Returns the five smallest numerical values present in the column.                            |                                  First 5 elements of sorted $X$                                  |
 |       `top_5`      |                             Returns the five largest numerical values present in the column.                            |                                   Last 5 elements of sorted $X$                                  |
 
@@ -462,7 +462,7 @@ Based on the datatype of the column the following attributes are calculated:
 | Attribute | Explanation | Formula |
 | --- | --- | --- |
 | cardinality | Counts the number of unique categorical classes present in the column. | - |
-| suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $\{c \in U : \text{Count}(c) < 50\}$ |
+| suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $ c \in U : \text{Count}(c) < 50 $ |
 | cardinality_after_merge | Computes the prospective unique class count assuming all low-representation categories are collapsed into a single unified bin. | - |
 | cardinality_tier | Broadly categorizes the column's variety density into discrete operational tiers (binary, low, medium, high, very-high). | Conditional bins on cardinality at thresholds: $2, 10, 50, 200$ |
 | encoding | Recommends an optimal machine learning vectorization strategy based on the feature's dynamic cardinality profile. | Map to label, OHE, target, or hashing based on tier bounds |
@@ -472,7 +472,7 @@ Based on the datatype of the column the following attributes are calculated:
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
 | frequency | A foundational distribution mapping tracking raw value occurrences alongside their relative representation metrics. | - |
-| rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $ c \in U : \text{Percent}(c) < 1\% $ |
+| rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $c \in U : \text{Percent}(c) < 1\%$ |
 | binary_flag | A Boolean indicator that flags whether the feature space is strictly composed of exactly two distinct categories. | $\text{True if } cardinality = 2$ |
 | high_card_flag | Signals whether the categorical feature features a dense variety boundary that could trigger dimensionality explosions. | $\text{True if } cardinality > 50$ |
 | suspected_text | Flags columns containing long free-form natural language strings rather than structured categorical labels. | - |
