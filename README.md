@@ -594,7 +594,7 @@ graph TD
     CalcExp --> | $$E \geq 5$$ | Chi2
     Chi2 --> Cramer1
 
-    CalcExp --> | $E \lt 5$ | G
+    CalcExp --> |"$$E \lt 5$$"| G
     G --> Cramer2
 
     CalcExp --> | bool x bool | Fisher
