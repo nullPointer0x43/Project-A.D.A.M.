@@ -442,9 +442,9 @@ Based on the datatype of the column the following attributes are calculated:
 |       `range`      |       $\text{Max}(X) - \text{Min}(X)$The absolute distance between the largest and smallest values in the column.       |                                  $\text{Max}(X) - \text{Min}(X)$                                 |
 | `extreme_outliers` |           Flags extreme positive tail values that dwarf the middle spread of the dataset by a factor of three.          |                    $Q_{0.99} > 3 \cdot IQR \land \text{Max}(X) > 3 \cdot IQR$                    |
 |   `IQR_outliers`   |        Filters for values that sit significantly outside the standard interquartile boundaries (Tukey's Fences).        |               $\{x \in X : x < Q_1 - 1.5 \cdot IQR \lor x > Q_3 + 1.5 \cdot IQR\}$               |
-|      `IQR_pc`      |                                        Percentage of the number of IQR outliers.                                        |                                  $\frac{\text{IQR\_outlier}}{n} \times 100 \%$                                 |
+|      `IQR_pc`      |                                        Percentage of the number of IQR outliers.                                        |                                  $\frac{\text{IQR outliers}}{n} \times 100 \%$                                 |
 |    `Z_outliers`    | Identifies rows with a standard score greater than 3, meaning they live more than 3 standard deviations above the mean. |                             $\{x \in X : \frac{x-\mu}{\sigma} > 3\}$                             |
-|       `Z_pc`       |                                         Percentage of the number of Z outliers.                                         |                                   $\frac{\text{Z\_outliers}}{n} \times 100 \%$                                  |
+|       `Z_pc`       |                                         Percentage of the number of Z outliers.                                         |                                   $\frac{\text{Z outliers}}{n} \times 100 \%$                                  |
 |   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if $IQR\_pc > 0.05 \lor Z\_pc > 0.05$                            |
 |     `bottom_5`     |                            Returns the five smallest numerical values present in the column.                            |                                  First 5 elements of sorted $X$                                  |
 |       `top_5`      |                             Returns the five largest numerical values present in the column.                            |                                   Last 5 elements of sorted $X$                                  |
@@ -456,11 +456,6 @@ Based on the datatype of the column the following attributes are calculated:
 |     `transform`    |   Recommends a data transformation strategy (like log, sqrt, or reciprocal) to normalize heavily skewed distributions.  |                                   -                                  |
 
 2. **Categorical Datatype:**
-Here is the structured breakdown of the attributes calculated in your categoricalColumnAnalysis function, formatted precisely according to your structural schema.
-
----
-
-## 2. Categorical Datatype: (Object, Category)
 
 * **Structural Cardinality & Encoding Framework:**
 
@@ -468,7 +463,7 @@ Here is the structured breakdown of the attributes calculated in your categorica
 | --- | --- | --- |
 | cardinality | Counts the number of unique categorical classes present in the column. | - |
 | suggested_merge_categories | Lists categories with extremely low absolute sample representations, making them ideal targets for merging into an "Other" bucket. | $\{c \in U : \text{Count}(c) < 50\}$ |
-| cardinality_after_merge | Computes the prospective unique class count assuming all low-representation categories are collapsed into a single unified bin. | $ |
+| cardinality_after_merge | Computes the prospective unique class count assuming all low-representation categories are collapsed into a single unified bin. | - |
 | cardinality_tier | Broadly categorizes the column's variety density into discrete operational tiers (binary, low, medium, high, very-high). | Conditional bins on cardinality at thresholds: $2, 10, 50, 200$ |
 | encoding | Recommends an optimal machine learning vectorization strategy based on the feature's dynamic cardinality profile. | Map to label, OHE, target, or hashing based on tier bounds |
 
@@ -477,18 +472,18 @@ Here is the structured breakdown of the attributes calculated in your categorica
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
 | frequency | A foundational distribution mapping tracking raw value occurrences alongside their relative representation metrics. | $\text{DataFrame}[\text{Count}(c), \text{Percent}(c)] \quad \forall c \in U$ |
-| rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $\{c \in U : \text{Percent}(c) < 1\%\}$ |
+| rare | Identifies categories whose structural footprint accounts for less than 1% of the entire column matrix. | $ \{ c \in U : \text{Percent}(c) < 1\% \} $ |
 | binary_flag | A Boolean indicator that flags whether the feature space is strictly composed of exactly two distinct categories. | $\text{True if } cardinality = 2$ |
 | high_card_flag | Signals whether the categorical feature features a dense variety boundary that could trigger dimensionality explosions. | $\text{True if } cardinality > 50$ |
-| suspected_text | Flags columns containing long free-form natural language strings rather than structured categorical labels. | $cardinality\_tier = \text{"very-high"} \land \text{Mean}(\text{len}(x_i)) > 150$ |
+| suspected_text | Flags columns containing long free-form natural language strings rather than structured categorical labels. | - |
 
 * **Information Theory & Information Concentration Metrics:**
 
 | Attribute | Explanation | Formula / Condition |
 | --- | --- | --- |
-| top-percentages | Calculates the running cumulative distribution share dominated by the largest 1, 3, and 5 categories. | $\sum_{j=1}^{i} \text{Percent}(c_j) \text{ for } i \in \{1, 3, 5\} \text{ sorted descending}$ |
-| entropy | Evaluates structural uncertainty normalized by total unique cardinality; a value near 1 implies a perfectly uniform class distribution. | $H_{norm}(X) = \frac{-\sum_{c \in U} p(c) \log_2 p(c)}{\log_2( |
-| gini | Computes the operational impurity profile, standardized against the maximum achievable diversity boundary of the categorical shape. | $G_{norm}(X) = \frac{1 - \sum_{c \in U} p(c)^2}{1 - \frac{1}{ |
+| top-percentages | Calculates the running cumulative distribution share dominated by the largest 1, 3, and 5 categories. | $\sum_{j=1}^{i} \text{Percent}(c_j)$ for i $\in$ $\{1, 3, 5\}$ sorted descending |
+| entropy | Evaluates structural uncertainty normalized by total unique cardinality; a value near 1 implies a perfectly uniform class distribution. | $H_{norm}(X) = \frac{-\sum_{c \in U} p(c) \log_2 p(c)}{\log_2(\|U\|)}$ |
+| gini | Computes the operational impurity profile, standardized against the maximum achievable diversity boundary of the categorical shape. | $G_{norm}(X) = \frac{1 - \sum_{c \in U} p(c)^2}{1 - \frac{1}{\|U\|}}$ |
 
 * **Target Variable Imbalance Assessment:**
 
