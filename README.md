@@ -564,7 +564,7 @@ graph TD
 
     CalcExp(Calculate Expected)
 
-    Chi2($$X^2$$)
+    Chi2(Chi Squared)
     Cramer1[Cramer's V]
 
     G(G-test)
@@ -591,10 +591,10 @@ graph TD
 
     CatCat --> CalcExp
 
-    CalcExp --> | $$E \geq 5$$ | Chi2
+    CalcExp --> |E >= 5| Chi2
     Chi2 --> Cramer1
 
-    CalcExp --> |"$$E \lt 5$$"| G
+    CalcExp --> |E < 5| G
     G --> Cramer2
 
     CalcExp --> | bool x bool | Fisher
@@ -630,10 +630,10 @@ graph TD
     Cohen2[Cohen's D]
 
     ANOVA[One Way ANOVA]
-    Eta1[$$\eta^2$$]
+    Eta1[Eta Squared]
 
     WelcheANOVA[Welche corrected ANOVA]
-    Eta2[$$\eta^2$$]    
+    Eta2[Eta Squared]    
 
     Mann[Mann Whitney]
     Rank1[Rank Biserial R]
