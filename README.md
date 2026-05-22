@@ -519,7 +519,7 @@ Based on the datatype of the column the following attributes are calculated:
     - **D'Agostino's $K^2$ Test:**
         - **Aim:** Evaluates normality across large datasets ($n \ge 5000$). It measures descriptive shape deviations by evaluating whether a column's skewness and kurtosis match a normal profile.
         - **Mathematical Background:**
-            - Z-Score Transformations ($Z_1, Z_2$): Because raw sample metrics  do not scale linearly with sample size, D'Agostino uses complex curve-fitting transformations (incorporating sample-size dependent means and variances) to cleanly scale both metrics to match standard normal distributions.
+            - **Z-Score Transformations ($Z_1, Z_2$):** Because raw sample metrics  do not scale linearly with sample size, D'Agostino uses complex curve-fitting transformations (incorporating sample-size dependent means and variances) to cleanly scale both metrics to match standard normal distributions.
         - **Mathematical Formula:**<br/>
              $$K^2 = Z^2(\sqrt{b_1}) + Z^2(b_2)$$
             - $Z(\sqrt{b_1})$ is the standard normal transformation of the sample skewness.
@@ -528,3 +528,20 @@ Based on the datatype of the column the following attributes are calculated:
         - **Alternative Hypothesis ($H_1$):** The sample population is non-normal due to asymmetric skew, anomalous tail-heaviness, or both.
         - **$P$-value:** Computed by mapping the final $K^2$ statistic directly onto a Chi-squared ($\chi^2$) probability survival function with exactly $2$ degrees of freedom: $P(\chi^2_2 \ge K^2)$
     - **Shapiro Wilk test:**
+        - **Aim:** Evaluates strict normality for smaller datasets (typically optimized for $n < 5000$). It determines whether a continuous sample was drawn from a normally distributed population.
+        - **Mechanism:**
+            - **Normal Expectations:** If we take a perfectly normal dataset of the same size, sorted it from smallest to largest, and plotted it, we would know exactly where each point should sit mathematically. This is our theoretical benchmark—what a perfect normal distribution is expected to look like.
+            - **"Ordered Data Points:** Next, we take our actual real-world data points and sort them from smallest to largest.
+            - **The Line of Best Fit:** Now, we plot them against each other on a graph:
+                - X-axis: Where the points should be (Normal Expectations).
+                - Y-axis: Where your points actually are (Ordered Data).
+            - If the data is perfectly normal, the points will form a flawless, straight diagonal line. If the data is weird, warped, or skewed, the dots will curve away from that straight diagonal line.
+            - **Weighted Linear Combination:** To calculate how close those dots are to a perfect straight line, the formula multiplies each of your sorted data points by a specific number (a weight) and adds them all up.
+        - **Mathematical Formula:**<br/>
+            $$W = \frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}{\sum_{i=1}^{n} (x_i - \mu)^2}$$
+            - numerator represents the weighted linear combination which serves as an estimation of the variance of the data.
+            - denominator represents the usual formula of variance.
+            - The test statistic $W$ is bounded strictly between $0$ and $1$; a value of $1$ signifies a flawless linear correlation with a perfect normal curve.
+        - **Null Hypothesis ($H_0$):** The sample data is normally distributed.
+        - **Alternative Hypothesis ($H_1$):** The sample data is non-normally distributed.
+        - **$P$-value:** Calculated by matching the computed $W$ statistic against the empirical, non-standardized sampling distribution of $W$ under a true null hypothesis.
