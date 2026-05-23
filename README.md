@@ -49,7 +49,7 @@ All Statistical tests are based on hypotheses which are either proven right by t
 So for all hypothesis testing, the exact same logical steps are followed. Firstly, three primary things are defined and set for the problem:
 1. **Null Hypothesis ($H_0$):** This is the assumption that there is no effect, no difference, or no relationship between variables.
 2. **Alternate Hypothesis ($H_1$):** The claim that we are actually trying to prove. It states that there is a real effect, a significant difference, or a true relationship.
-3. **Significance Level ($\alpha$):** It represents the maximum risk we are willing to take of being wrong if we claim a result.  Usually set at $0.05$ ($5\%$). Intuitively it explains that there is a $< 5 \%$ probability that the result we conclude on is wrong.
+3. **Significance Level ($\alpha$):** It represents the maximum risk we are willing to take of being wrong if we claim a result.  Usually set at $0.05$ ($5\\%$). Intuitively it explains that there is a $< 5 \\%$ probability that the result we conclude on is wrong.
 
 Upon fixing all these parameters for a given test we set on calculating the:
 * **$P$-value:** The probability of getting the exact experimental results (or even more extreme results) purely by random luck,assuming that the null hypothesis is completely true.<br/>
