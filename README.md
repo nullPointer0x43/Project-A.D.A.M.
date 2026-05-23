@@ -740,7 +740,7 @@ graph TD
         - Because the sampling distribution of $r$ becomes highly skewed as $|r|$ approaches $1$, we cannot calculate a symmetric confidence interval directly on $r$. Instead, we use Fisher’s $z$-transformation to convert $r$ into a normally distributed variable ($z_r$)
         - $$z_r = \text{arctanh}(r) = \frac{1}{2} \ln\left(\frac{1+r}{1-r}\right)$$
         - $$SE_{z_r} = \frac{1}{\sqrt{n - 3}}$$
-        - $$\text{CI}_{z_r} = z_r \pm z^* \times SE_{z_r}$$
+        - $$\text{CI}\_{z\_r} = z\_r \pm z^* \times SE\_{z\_r}$$
         - $$\text{CI}_r = \tanh(\text{bounds of } \text{CI}_{z_r}) = \frac{e^{2z} - 1}{e^{2z} + 1}$$
 5. **Spearman’s Rank Correlation Coefficient: ($r_s$)**
     - **Aim:** to measure the strength and direction of a monotonic relationship between two variables.
