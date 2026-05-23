@@ -17,3 +17,5 @@
 /PostgreSQL/.idea
 /SandBox/.idea
 .env
+
+.gitignore
