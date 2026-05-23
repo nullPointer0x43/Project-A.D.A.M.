@@ -741,7 +741,7 @@ graph TD
         - $$z_r = \text{arctanh}(r) = \frac{1}{2} \ln\left(\frac{1+r}{1-r}\right)$$
         - $$SE_{z_r} = \frac{1}{\sqrt{n - 3}}$$
         - $$\text{CI}\_{z\_r} = z\_r \pm z^* \times SE\_{z\_r}$$
-        - $$\text{CI}_r = \tanh(\text{bounds of } \text{CI}_{z_r}) = \frac{e^{2z} - 1}{e^{2z} + 1}$$
+        - $$\text{CI}\_r = \tanh(\text{bounds of } \text{CI}\_{z\_r}) = \frac{e^{2z} - 1}{e^{2z} + 1}$$
 5. **Spearman’s Rank Correlation Coefficient: ($r_s$)**
     - **Aim:** to measure the strength and direction of a monotonic relationship between two variables.
     - **Mechanism:** The test converts raw data points into ordinal ranks (1st, 2nd, 3rd, etc.) independently for each variable. It then runs the exact algebraic covariance-over-variance logic of Pearson's correlation on those assigned ranks.
@@ -768,7 +768,7 @@ graph TD
     - **Effect Size: Cohen's D:** 
         - $$d = \frac{\bar{x}_1 - \bar{x}_2}{s_{\text{pooled}}}$$
     - **Confidence Interval:**
-        - $$\text{CI} = (\bar{x}_1 - \bar{x}_2) \pm t^* \times \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$$
+        - $$\text{CI} = (\bar{x}\_1 - \bar{x}\_2) \pm t^* \times \sqrt{\frac{s\_1^2}{n\_1} + \frac{s\_2^2}{n\_2}}$$
         - $t^*$ is the critical value from the Student's $t$-distribution for the chosen confidence level
 7. **One-way and Welche Corrected ANOVA (Analysis of Variance):**
     - **Aim:** To determine whether there is a statistically significant difference among the population means of three or more independent groups.
@@ -778,11 +778,11 @@ graph TD
         - The test calculates an F-statistic, which is the ratio of these two variances. If the variance between the groups is significantly larger than the variance within the groups, the groups are highly likely to have different means.
     - **Mathematical Formula:**
         - $$F = \frac{MS_{\text{between}}}{MS_{\text{within}}} = \frac{SS_{\text{between}} / df_{\text{between}}}{SS_{\text{within}} / df_{\text{within}}}$$
-        - $SS_{\text{between}} = \sum_{j=1}^{k} (\bar{x}_j - \bar{x}_{\text{grand}})^2$  (where $k$ is number of groups, $n_j$ is group sample size)
+        - $SS\_{\text{between}} = \sum\_{j=1}^{k} n\_j (\bar{x}\_j - \bar{x}\_{\text{grand}})^2$  (where $k$ is number of groups, $n_j$ is group sample size)
         - $SS_{\text{within}} = \sum_{j=1}^{k} \sum_{i=1}^{n_j} (x_{ij} - \bar{x}_j)^2$
         - $df_{\text{between}} = k - 1$
         - $df_{\text{within}} = N - k$  ($N$ is total sample size across all groups)
-        - **Welche's Correction:** Instead of pooling variances into a single denominator, Welch’s ANOVA introduces a weighting factor ($w_j$) for each group based entirely on its individual sample size ($n_j$) and individual variance ($s_j^2$):$$w_j = \frac{n_j}{s_j^2}$$
+        - **Welche's Correction:** Instead of pooling variances into a single denominator, Welch’s ANOVA introduces a weighting factor ($w_j$) for each group based entirely on its individual sample size ($n_j$) and individual variance ($s_j^2$):$$w\_j = \frac{n\_j}{s\_j^2}$$
     - **Null Hypothesis ($H_0$):** The true population means of all groups are exactly equal. 
     - **Alternate Hypothesis ($H_1$):** At least one group population mean is significantly different from the others.
     - **$p$-value:** 
@@ -794,7 +794,7 @@ graph TD
         - Measures the proportion of total variance attributed to the effect. It can be biased upward in small samples.
         - $$\eta^2 = \frac{SS_{\text{between}}}{SS_{\text{total}}}$$
     - **Confidence Interval:**
-        - $$\text{CI} = (\bar{x}_j - \bar{x}_m) \pm q^* \times \sqrt{\frac{MS_{\text{within}}}{2}\left(\frac{1}{n_j} + \frac{1}{n_m}\right)}$$
+        - $$\text{CI} = (\bar{x}\_j - \bar{x}\_m) \pm q^* \times \sqrt{\frac{MS\_{\text{within}}}{2}\left(\frac{1}{n\_j} + \frac{1}{n\_m}\right)}$$
 8. **Mann-Whitney $U$ test:**
     - **Aim:** To determine whether the distributions of two independent groups are significantly different from one another.
     - **Mechanism:** The test pools all observations from both groups together and ranks them from smallest (rank 1) to largest (rank $n$). The test isolates the ranks of each group and calculates a $U$ statistic for each. 
