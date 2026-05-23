@@ -4,6 +4,8 @@
 
 Project A.D.A.M. is a production-grade, containerized agent based platform designed to automate end-to-end exploratory data analysis (EDA), data cleaning, and statistical profiling. 
 
+The project contains an LLM based chatbot which the user can interact with and derive data driven insights.
+
 By combining deterministic programmatic pipelines with LLM reasoning, the system takes raw, uncurated datasets and automatically generates comprehensive, insights-driven data reports with minimal human intervention.
 
 ![Demo GIF](./documentation_media/demo.gif)
@@ -25,7 +27,7 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
     - **[4.5 Missingness Analysis Subgraph](#45-missingness-analysis-subgraph)**
     - **[4.6 Univariate Analysis Subgraph](#46-univariate-analysis)**
     - **[4.7 Multivariate Analysis Subgraph](#47-multivariate-analysis)**
-    - **[4.8 Agent Analysis Subgraph](#48-agentic-analysis-and-chatbot-subgraph)**
+    - **[4.8 Agentic Analysis Subgraph](#48-agentic-analysis-and-chatbot-subgraph)**
     - **[4.9 Report Node](#49-report-node)**
     - **[4.10 Overall Graph](#410-overall-graph-visualised)**
 5. **[System Design and Tech Stack](#5-system-design-and-tech-stack)**
@@ -42,7 +44,7 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
 
 ## **3. Statistical Background:**
 ### **3.1 Basics:**
-All Statistical tests are based on hypothesises which are either proved right by the test and data or rejected.
+All Statistical tests are based on hypotheses which are either proved right by the test and data or rejected.
 
 So for all tests hypothesis testing follows the exact same logical steps. Firstly, three primary things are defined and set for the problem:
 1. **Null Hypothesis ($H_0$):** This is the assumption that there is no effect, no difference, or no relationship between your variables.
