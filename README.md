@@ -2,11 +2,11 @@
 
 ## **1. Overview:**
 
-Project A.D.A.M. is a production-grade, containerized agent based platform designed to automate end-to-end exploratory data analysis (EDA), data cleaning, and statistical profiling. 
+Project A.D.A.M. is a production-grade, containerized, agent based platform designed to automate end-to-end exploratory data analysis (EDA), data cleaning, and statistical profiling. 
 
 The project contains an LLM based chatbot which the user can interact with and derive data driven insights.
 
-By combining deterministic programmatic pipelines with LLM reasoning, the system takes raw, uncurated datasets and automatically generates comprehensive, insights-driven data reports with minimal human intervention.
+By combining deterministic programmatic pipelines with LLM reasoning, the system takes raw, uncurated datasets and automatically generates comprehensive data reports with minimal human intervention.
 
 ![Demo GIF](./documentation_media/demo.gif)
 
@@ -18,7 +18,7 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
     - **[3.2 Decision Matrix](#32-the-decision-matrix)**
     - **[3.3 Significance Level Correction](#33-significance-level-correction)**
         - **[3.3.1 Bonferroni Correction](#331-bonferroni-correction-controls-family-wise-error-rate)**
-        - **[3.3.2 Benjamini Hochberg](#332-benjamini-hochberg-correction)**
+        - **[3.3.2 Benjamini Hochberg Correction](#332-benjamini-hochberg-correction)**
 4. **[Agentic Orchestration](#4-agentic-orchestration-the-langgraph-architecture)**
     - **[4.1 State Description](#41-state-of-langgraph)**
     - **[4.2 File and Targets Subgraph](#42-file-and-target-input-subgraph)**
@@ -30,31 +30,31 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
     - **[4.8 Agentic Analysis Subgraph](#48-agentic-analysis-and-chatbot-subgraph)**
     - **[4.9 Report Node](#49-report-node)**
     - **[4.10 Overall Graph](#410-overall-graph-visualised)**
-5. **[System Design and Tech Stack](#5-system-design-and-tech-stack)**
+5. **[System Design and Tech-Stack](#5-system-design-and-tech-stack)**
     - **[5.1 Architectural Overview](#51-architectural-overview)**
     - **[5.2 Architectural Flow](#52-high-level-system-architecture)**
     - **[5.3 Container-Wise Explanation](#53-container-wise-explanation)**
 6. **[Repository Structure](#6-repository-structure)**
 7. **[Future Improvement](#7-future-improvements)**
 8. **[How to Run?](#7-how-to-run)**
-    - **[8.1 Docker-compose](#81-recommended-using-docker-compose)**
+    - **[8.1 Docker-Compose](#81-recommended-using-docker-compose)**
     - **[8.2 Manual Setup](#82-manual-setup)**
 9. **[Additional Links](#9-additional-links)**
 10. **[Credits and References](#10-credits-and-references)**
 
 ## **3. Statistical Background:**
 ### **3.1 Basics:**
-All Statistical tests are based on hypotheses which are either proved right by the test and data or rejected.
+All Statistical tests are based on hypotheses which are either proven right by the data or rejected.
 
-So for all tests hypothesis testing follows the exact same logical steps. Firstly, three primary things are defined and set for the problem:
-1. **Null Hypothesis ($H_0$):** This is the assumption that there is no effect, no difference, or no relationship between your variables.
-2. **Alternate Hypothesis ($H_a$):** The claim that we are actually trying to prove. It states that there is a real effect, a significant difference, or a true relationship.
-3. **Significance Level ($\alpha$):** It represents the maximum risk we are willing to take of being wrong if you claim a discovery.  Usually set at $0.05$ ($5\%$). Intuitively it explains that there is a $< 5 \%$ probability that the result we conclude on is wrong.
+So for all hypothesis testing, the exact same logical steps are followed. Firstly, three primary things are defined and set for the problem:
+1. **Null Hypothesis ($H_0$):** This is the assumption that there is no effect, no difference, or no relationship between variables.
+2. **Alternate Hypothesis ($H_1$):** The claim that we are actually trying to prove. It states that there is a real effect, a significant difference, or a true relationship.
+3. **Significance Level ($\alpha$):** It represents the maximum risk we are willing to take of being wrong if we claim a result.  Usually set at $0.05$ ($5\%$). Intuitively it explains that there is a $< 5 \%$ probability that the result we conclude on is wrong.
 
 Upon fixing all these parameters for a given test we set on calculating the:
 * **$P$-value:** The probability of getting the exact experimental results (or even more extreme results) purely by random luck,assuming that the null hypothesis is completely true.<br/>
-    - Low $p$-value ($p < \alpha$): The data looks highly unusual under $H_0$. You reject $H_0$ and claim a discovery. <br/>
-    - High $p$-value ($p \ge \alpha$): The data is completely consistent with random noise. You fail to reject $H_0$.
+    - Low $p$-value ($p < \alpha$): The data looks highly unusual under $H_0$. $H_0$ is rejected and we claim a discovery. <br/>
+    - High $p$-value ($p \ge \alpha$): The data is completely consistent with random noise, and we fail to reject $H_0$.
 
 ### **3.2 The Decision Matrix:**
 |                                    | $H_0$ is Actually True<br/>(No Real Effect)              | $H_0$ is Actually False<br/>(Real Effect Exists)        |
@@ -65,22 +65,22 @@ Upon fixing all these parameters for a given test we set on calculating the:
 ### **3.3 Significance Level Correction:**
 If we run a single hypothesis test with $\alpha = 0.05$, we have a $5\%$ chance of a False Positive. But if there are a 100 tests conducted at the same time using the same $\alpha$, the probability of getting at least one false positive jumps drastically:
 $$\text{P(At least one False Positive)} = 1 - (1 - 0.05)^{100} \approx 99.4\%$$
-If we don't correct your significance level when running multiple tests, the pipeline captures dozens of completely fake "discoveries" purely due to random chance. This is known as the **Multiple Comparisons Problem.**
+If we don't correct the significance level when running multiple tests, the pipeline captures dozens of completely fake "discoveries" purely due to random chance. This is known as the **Multiple Comparisons Problem.**
 
 #### **3.3.1 Bonferroni Correction (Controls Family-Wise Error Rate):**
-The most conservative approach possible. It aims to guarantee that the probability of getting even a single false positive across your entire family of tests is less than $\alpha$.
+The most conservative approach possible. It aims to guarantee that the probability of getting even a single false positive across the entire family of tests is less than $\alpha$.
 * The Math: Divide the original significance level by the total number of tests ($m$):
 $$\alpha_{\text{new}} = \frac{\alpha_{\text{original}}}{m}$$
 * Pros: Extremely safe. If it says a feature is significant, it means that with sureity that the probability of being wrong is $< (\alpha \times 100) \%$.
 * Cons: It drives the threshold so low that it causes a massive spike in the number of Type 2 errors (Falsely sticking to $H_0$).
 
 #### **3.3.2 Benjamini-Hochberg Correction:**
-Instead of ensuring zero false positives, Benjamini-Hochberg (BH) controls the proportion of discoveries that are fake. If you set your False Discovery Rate (FDR) to $5\%$, it means you are completely fine if $5\%$ of your final accepted discoveries are false positives.
-* **The Method:** Sort all your $m$ individual $p$-values in ascending order ($p_1 \le p_2 \le \dots \le p_m$). Assign each a rank $i$ (from $1$ to $m$). Find the largest rank $k$ such that:
+Instead of ensuring zero false positives, Benjamini-Hochberg (BH) controls the proportion of discoveries that are fake. If we set the False Discovery Rate (FDR) to $5\%$, it means you are completely fine if $5\%$ of the final accepted discoveries are false positives.
+* **The Method:** Sort all the $m$ individual $p$-values in ascending order ($p_1 \le p_2 \le \dots \le p_m$). Assign each a rank $i$ (from $1$ to $m$). Find the largest rank $k$ such that:
 $$p_i \le \left(\frac{i}{m}\right) \alpha$$
 * Reject the null hypothesis for that specific test and all tests ranked below it.
-* **Pros:** High statistical power. It scales dynamically based on the strength of your signals.
-* **Cons:** Allows a small, controlled number of false positives into your final results, which requires downstream validation.
+* **Pros:** High statistical power. It scales dynamically based on the strength of the signals.
+* **Cons:** Allows a small, controlled number of false positives into the final results, which requires downstream validation.
 
 ## **4. Agentic Orchestration: The LangGraph Architecture**
 
@@ -475,14 +475,14 @@ Based on the datatype of the column the following attributes are calculated:
 |      Attribute     |                                                       Explanation                                                       |                                              Formula                                             |
 |:---:|:---:|:---:|
 |    `percentiles`   |                     Identifies value thresholds below which a specific percentage of the data falls.                    | $Q(p)$ = $x$ where $P(X \le x)$ = $p$ for $p \in \{0.01, 0.05, 0.25, 0.5, 0.75, 0.95, 0.99\}$ |
-|        `iqr`       |           Captures the spread of the middle 50% of your data by subtracting the 25th percentile from the 75th.          |                                         $IQR = Q_3 - Q_1$                                        |
+|        `iqr`       |           Captures the spread of the middle 50% of the data by subtracting the 25th percentile from the 75th.          |                                         $IQR = Q_3 - Q_1$                                        |
 |       `range`      |       $\text{Max}(X) - \text{Min}(X)$The absolute distance between the largest and smallest values in the column.       |                                  $\text{Max}(X) - \text{Min}(X)$                                 |
 | `extreme_outliers` |           Flags extreme positive tail values that dwarf the middle spread of the dataset by a factor of three.          |                    $Q_{0.99} > 3 \cdot IQR$ and $\text{Max}(X) > 3 \cdot IQR$                    |
 |   `IQR_outliers`   |        Filters for values that sit significantly outside the standard interquartile boundaries (Tukey's Fences).        |               $x \in X : x < Q_1 - 1.5 \cdot IQR   \text{ or } x > Q_3 + 1.5 \cdot IQR$               |
 |      `IQR_pc`      |                                        Percentage of the number of IQR outliers.                                        |                                  $\frac{\text{IQR outliers}}{n} \times 100 \%$                                 |
 |    `Z_outliers`    | Identifies rows with a standard score greater than 3, meaning they live more than 3 standard deviations above the mean. |                             $\{x \in X : \frac{x-\mu}{\sigma} > 3\}$                             |
 |       `Z_pc`       |                                         Percentage of the number of Z outliers.                                         |                                   $\frac{\text{Z outliers}}{n} \times 100 \%$                                  |
-|   `outlier_flag`   |                 A binary flag if more than 5% of your dataset is flagged as anomalous by either metric.                 |                            True if IQR_pc > 0.05 or Z_pc > 0.05                           |
+|   `outlier_flag`   |                 A binary flag if more than 5% of the dataset is flagged as anomalous by either metric.                 |                            True if IQR_pc > 0.05 or Z_pc > 0.05                           |
 |     `bottom_5`     |                            Returns the five smallest numerical values present in the column.                            |                                  First 5 elements of sorted $X$                                  |
 |       `top_5`      |                             Returns the five largest numerical values present in the column.                            |                                   Last 5 elements of sorted $X$                                  |
 
@@ -570,9 +570,9 @@ Based on the datatype of the column the following attributes are calculated:
             - **"Ordered Data Points:** Next, we take our actual real-world data points and sort them from smallest to largest.
             - **The Line of Best Fit:** Now, we plot them against each other on a graph:
                 - X-axis: Where the points should be (Normal Expectations).
-                - Y-axis: Where your points actually are (Ordered Data).
+                - Y-axis: Where the points actually are (Ordered Data).
             - If the data is perfectly normal, the points will form a flawless, straight diagonal line. If the data is weird, warped, or skewed, the dots will curve away from that straight diagonal line.
-            - **Weighted Linear Combination:** To calculate how close those dots are to a perfect straight line, the formula multiplies each of your sorted data points by a specific number (a weight) and adds them all up.
+            - **Weighted Linear Combination:** To calculate how close those dots are to a perfect straight line, the formula multiplies each of the sorted data points by a specific number (a weight) and adds them all up.
         - **Mathematical Formula:**<br/>
             $$W = \frac{\left(\sum_{i=1}^{n} a_i x_{(i)}\right)^2}{\sum_{i=1}^{n} (x_i - \mu)^2}$$
             - numerator represents the weighted linear combination which serves as an estimation of the variance of the data.
