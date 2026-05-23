@@ -63,19 +63,19 @@ Upon fixing all these parameters for a given test we set on calculating the:
 | Fail to Reject $H_0$<br/>(Play it Safe) | True Negative<br/>Probability = $1 - \alpha$             | **Type 2** Error (**False Negative**)<br/>Probability = $\beta$ |   
 
 ### **3.3 Significance Level Correction:**
-If we run a single hypothesis test with $\alpha = 0.05$, we have a $5\%$ chance of a False Positive. But if there are a 100 tests conducted at the same time using the same $\alpha$, the probability of getting at least one false positive jumps drastically:
-$$\text{P(At least one False Positive)} = 1 - (1 - 0.05)^{100} \approx 99.4\%$$
+If we run a single hypothesis test with $\alpha = 0.05$, we have a $5\\%$ chance of a False Positive. But if there are a 100 tests conducted at the same time using the same $\alpha$, the probability of getting at least one false positive jumps drastically:
+$$\text{P(At least one False Positive)} = 1 - (1 - 0.05)^{100} \approx 99.4\\%$$
 If we don't correct the significance level when running multiple tests, the pipeline captures dozens of completely fake "discoveries" purely due to random chance. This is known as the **Multiple Comparisons Problem.**
 
 #### **3.3.1 Bonferroni Correction (Controls Family-Wise Error Rate):**
 The most conservative approach possible. It aims to guarantee that the probability of getting even a single false positive across the entire family of tests is less than $\alpha$.
 * The Math: Divide the original significance level by the total number of tests ($m$):
 $$\alpha_{\text{new}} = \frac{\alpha_{\text{original}}}{m}$$
-* Pros: Extremely safe. If it says a feature is significant, it means that with sureity that the probability of being wrong is $< (\alpha \times 100) \%$.
+* Pros: Extremely safe. If it says a feature is significant, it means that with sureity that the probability of being wrong is $< (\alpha \times 100) \\%$.
 * Cons: It drives the threshold so low that it causes a massive spike in the number of Type 2 errors (Falsely sticking to $H_0$).
 
 #### **3.3.2 Benjamini-Hochberg Correction:**
-Instead of ensuring zero false positives, Benjamini-Hochberg (BH) controls the proportion of discoveries that are fake. If we set the False Discovery Rate (FDR) to $5\%$, it means you are completely fine if $5\%$ of the final accepted discoveries are false positives.
+Instead of ensuring zero false positives, Benjamini-Hochberg (BH) controls the proportion of discoveries that are fake. If we set the False Discovery Rate (FDR) to $5\\%$, it means we are completely fine if $5\\%$ of the final accepted discoveries are false positives.
 * **The Method:** Sort all the $m$ individual $p$-values in ascending order ($p_1 \le p_2 \le \dots \le p_m$). Assign each a rank $i$ (from $1$ to $m$). Find the largest rank $k$ such that:
 $$p_i \le \left(\frac{i}{m}\right) \alpha$$
 * Reject the null hypothesis for that specific test and all tests ranked below it.
