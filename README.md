@@ -10,17 +10,22 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
 1. **[Overview](#1-overview)**
 2. **[Table of Contents](#2-table-of-contents)**
 3. **[Statistical Background](#3-statistical-background)**
-    - **[Basics](#31-basics)**
-    - **[Decision Matrix](#32-the-decision-matrix)**
-    - **[Significance Level Correction](#33-significance-level-correction)**
-        - **[Bonferroni Correction](#331-bonferroni-correction-controls-family-wise-error-rate)**
-        - **[Benjamini Hochberg](#332-benjamini-hochberg-correction)**
+    - **[3.1 Basics](#31-basics)**
+    - **[3.2 Decision Matrix](#32-the-decision-matrix)**
+    - **[3.3 Significance Level Correction](#33-significance-level-correction)**
+        - **[3.3.1 Bonferroni Correction](#331-bonferroni-correction-controls-family-wise-error-rate)**
+        - **[3.3.2 Benjamini Hochberg](#332-benjamini-hochberg-correction)**
 4. **[Agentic Orchestration](#4-agentic-orchestration-the-langgraph-architecture)**
-    - **[State Description](#41-state-of-langgraph)**
-    - **[File and Targets Subgraph](#42-file-and-target-input-subgraph)**
-    - **[Null Analysis Subgraph](#43-disguised-null-identification-subgraph)**
-    - **[Type Validation Subgraph](#44-type-validation-subgraph)**
-    - **[Missingness Analysis Subgraph](#45-missingness-analysis-subgraph)**
+    - **[4.1 State Description](#41-state-of-langgraph)**
+    - **[4.2 File and Targets Subgraph](#42-file-and-target-input-subgraph)**
+    - **[4.3 Null Analysis Subgraph](#43-disguised-null-identification-subgraph)**
+    - **[4.4 Type Validation Subgraph](#44-type-validation-subgraph)**
+    - **[4.5 Missingness Analysis Subgraph](#45-missingness-analysis-subgraph)**
+    - **[4.6 Univariate Analysis Subgraph](#46-univariate-analysis)**
+    - **[4.7 Multivariate Analysis Subgraph](#47-multivariate-analysis)**
+    - **[4.8 Agent Analysis Subgraph](#48-agentic-analysis-and-chatbot-subgraph)**
+    - **[4.9 Report Node](#49-report-node)**
+    - **[4.10 Overall Graph](#410-overall-graph-visualised)**
 
 ## **3. Statistical Background:**
 ### **3.1 Basics:**
@@ -909,3 +914,102 @@ graph TD
     AGENT -.- REPORT
 ```
 
+## **5. System Design and Tech Stack:**
+
+### **5.1 Architectural Overview:**
+*   **Design Pattern:** Distributed Microservices Architecture managed via Docker Compose.
+*   **Communication Layer:** REST API for handling long-running data workflows coupled with WebSocket streaming for live runtime state feedback.
+
+### **5.2 High-Level System Architecture:**
+```mermaid
+graph TD
+    %% Nodes with Icons
+    USER["👤 USER"]
+    FRONTEND["⚛️ Frontend - React"]
+    NginX["🌐 Nginx Reverse Proxy"]
+    BACKEND["⚡ Backend: FastAPI + LangGraph"]
+    SANDBOX["📦 Isolated Sandbox"]
+    REDIS["🛑 Redis Cache"]
+    MINIO-DB["🪣 MinIO Object Store"]
+    POSTGRE["🐘 PostgreSQL DB"]
+    CHROMA-DB["📐 Chroma Vector DB"]
+    LLM@{ shape: f-circ, label: "Junction" }
+    OLLAMA["🦙 Ollama Local Services"]
+    GEMINI["✨ Gemini Analytics Engine"]
+
+    %% Node Interconnections
+    USER -.- FRONTEND
+    FRONTEND <--> NginX
+    NginX <--> BACKEND
+    BACKEND <--> POSTGRE
+    BACKEND <--> CHROMA-DB
+    BACKEND <--> SANDBOX
+    BACKEND <--> REDIS
+    BACKEND --- LLM
+
+    LLM --> OLLAMA
+    LLM --> GEMINI
+
+    REDIS <--> MINIO-DB
+    SANDBOX <--> REDIS
+
+    %% Apply Structural Style Classes Safely
+    class USER,FRONTEND client;
+    class NginX gateway;
+    class BACKEND app;
+    class SANDBOX isolated;
+    class REDIS,MINIO-DB,POSTGRE,CHROMA-DB storage;
+    class LLM,OLLAMA,GEMINI ai;
+```
+
+### **5.3 Container-Wise Explanation:**
+
+#### **5.3.1 `frontend-ui` (React Single Page Application):**
+*   **Purpose:** Serves the interactive user interface, rendering real-time streaming agent logs, analytical chart layouts, and historical report download trees.
+*   **Tech Stack:** React, TailwindCSS, Vite.
+*   **Data & State:** Entirely stateless. Establishes long-lived client-side WebSocket connections with the FastAPI server to process streamed data logs natively.
+
+#### **5.3.2 `nginx` (Reverse Proxy Gateway):**
+*   **Purpose:** Acts as the single entry point for all incoming user traffic, routing client requests securely down to the appropriate back-end ports.
+*   **Tech Stack:** Nginx (Official Alpine Image).
+*   **Data & State:** Stateless. Standard routing logic managed via custom configuration maps (`nginx.conf`).
+
+#### **5.3.3 `fastapi-backend` (Core API Service):**
+*   **Purpose:** Orchestrates the primary application logic, instantiates the LangGraph engine loops, manages background tasks, and bridges user storage interfaces.
+*   **Tech Stack:** Python, FastAPI, Uvicorn, LangGraph, Pydantic.
+*   **Data & State:** State-aware but lightweight. Relies on Redis for active user session caching and pipes long-term metadata out to the PostgreSQL cluster.
+
+#### **5.3.4 `sandbox-runtime` (Isolated Container):**
+*   **Purpose:** Executes untrusted, model-generated Python data cleaning and statistical evaluation scripts cleanly away from the primary system layer.
+*   **Tech Stack:** Python, Pandas, NumPy, SciPy, Statsmodels.
+*   **Data & State:** Purely execution state. Interacts with the Minio-DB and Redis Cache.
+*   **Hardened Compute Security Boundary.** Run with strict memory and CPU throttling parameters, zero host OS directory mounts, and fully disabled external internet egress to prevent arbitrary execution exploits.
+
+#### **5.3.5 `redis` (In-Memory Cache):**
+*   **Purpose:** Serves as a low-latency caching mechanism,and inter-container cache shared between the main backend api and the sand-box.
+*   **Tech Stack:** Redis Stack (Official Image).
+*   **Data & State:** Highly transient, volatile state optimized for rapid key-value storage retrievals.
+
+#### **5.3.6 `minio-storage` (S3 Object Storage Solution):**
+*   **Purpose:** Acts as the unified local object file repository, securely archiving raw binary user datasets and compiled target reports.
+*   **Tech Stack:** MinIO (S3-Compatible Client API).
+*   **Data & State:** Enforces reliable local file system persistence using a dedicated Docker named volume mount (`minio_data`).
+
+#### **5.3.7 `postgres-db` (Relational Application Database):**
+*   **Purpose:** Serves as the central repository for core relational application states and user identity data.
+*   **Tech Stack:** PostgreSQL (Official Alpine Distribution).
+*   **Data & State:** Leverages persistent Docker volume mapping (`postgres_data`) to prevent data loss during cluster reboots.
+
+#### **5.3.8 `chroma-db` (Vector Database & RAG Layer):**
+*   **Purpose:** Acts as the agentic system's semantic memory bank, optimizing retrieval-augmented context matching during cleaning iterations.
+*   **Tech Stack:** ChromaDB.
+*   **Data & State:** Manages vector collection coordinates using dedicated disk volume storage profiles (`chroma_data`).
+
+#### **5.3.9 `ollama-service` (Local Conversational Core):**
+*   **Purpose:** Provisions local, low-latency execution of foundational LLMs to handle conversational routines and classification tasks.
+*   **Tech Stack:** Ollama, Llama-3.
+*   **Data & State:** Stateless logic processing coupled with persistent local storage volume mapping to retain downloaded model weight files natively (`ollama_models`).
+
+#### **5.3.10 `gemini-api-bridge` (Advanced Analytical Agent Core):**
+*   **Tech Stack:** Google GenAI SDK Client Layer.
+*   **Model:** Gemini 3.4 Flash Lite
