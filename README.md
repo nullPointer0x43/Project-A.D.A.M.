@@ -521,7 +521,7 @@ Based on the datatype of the column the following attributes are calculated:
         - **Null Hypothesis ($H_0$):** The distribution is unimodal (contains exactly one peak or mode).
         - **Alternative Hypothesis ($H_1$):** The distribution is multimodal.
         - **$P$-value:** Calculated by Monte Carlo Bootstrapping.
-    - **D'Agostino's $K^2$ Test:**
+    - **3.2 D'Agostino's $K^2$ Test:**
         - **Aim:** Evaluates normality across large datasets ($n \ge 5000$). It measures descriptive shape deviations by evaluating whether a column's skewness and kurtosis match a normal profile.
         - **Mathematical Background:**
             - **Z-Score Transformations ($Z_1, Z_2$):** Because raw sample metrics  do not scale linearly with sample size, D'Agostino uses complex curve-fitting transformations (incorporating sample-size dependent means and variances) to cleanly scale both metrics to match standard normal distributions.
@@ -532,7 +532,7 @@ Based on the datatype of the column the following attributes are calculated:
         - **Null Hypothesis ($H_0$):** The sample population exhibits a normal distribution shape (skewness = 0, excess kurtosis = 0).
         - **Alternative Hypothesis ($H_1$):** The sample population is non-normal due to asymmetric skew, anomalous tail-heaviness, or both.
         - **$P$-value:** Computed by mapping the final $K^2$ statistic directly onto a Chi-squared ($\chi^2$) probability survival function with exactly $2$ degrees of freedom: $P(\chi^2_2 \ge K^2)$
-    - **Shapiro Wilk test:**
+    - **3.3 Shapiro Wilk test:**
         - **Aim:** Evaluates strict normality for smaller datasets (typically optimized for $n < 5000$). It determines whether a continuous sample was drawn from a normally distributed population.
         - **Mechanism:**
             - **Normal Expectations:** If we take a perfectly normal dataset of the same size, sorted it from smallest to largest, and plotted it, we would know exactly where each point should sit mathematically. This is our theoretical benchmark—what a perfect normal distribution is expected to look like.
