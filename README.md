@@ -1076,7 +1076,6 @@ graph TD
 *   **Model:** Gemini 3.4 Flash Lite
 
 ## **6. Repository Structure:**
-## 📂 Repository Structure
 
 ```text
 ├── Backend/
@@ -1186,24 +1185,24 @@ All the custom docker images are available on docker-hub:
 ### **10.4 Statistical Theory Foundations (StatQuest with Josh Starmer):**
 A significant portion of the statistical tests knowledge (including variance validation and non-parametric rank assessments) was built following the conceptual breakdowns from the [StatQuest Channel Hub](https://www.youtube.com/@statquest).
 
-#### **10.4.1 Parametric Modeling & Analysis of Variance (ANOVA):**
-* [One-Way ANOVA Clearly Explained](https://www.youtube.com/watch?v=fXSMD-p3n7c) - The conceptual baseline for between-group vs. within-group variance breakdown.
-* [Two-Way ANOVA Concepts](https://www.youtube.com/watch?v=GOIUasSTgS8) - Foundations on interaction effects and multi-variable variance cross-examination.
-* [F-Distribution and F-Statistic Foundations](https://www.youtube.com/watch?v=0oc49DyA3hU) - Core mathematics mapping variance ratios to continuous right-tailed probability metrics.
+- #### **10.4.1 Parametric Modeling & Analysis of Variance (ANOVA):**
+    * [One-Way ANOVA Clearly Explained](https://www.youtube.com/watch?v=fXSMD-p3n7c) - The conceptual baseline for between-group vs. within-group variance breakdown.
+    * [Two-Way ANOVA Concepts](https://www.youtube.com/watch?v=GOIUasSTgS8) - Foundations on interaction effects and multi-variable variance cross-examination.
+    * [F-Distribution and F-Statistic Foundations](https://www.youtube.com/watch?v=0oc49DyA3hU) - Core mathematics mapping variance ratios to continuous right-tailed probability metrics.
 
-#### **10.4.2 Non-Parametric Methods & Robust Alternatives:**
-* [Ranked-Based Statistics & Non-Parametric Frameworks](https://www.youtube.com/watch?v=fYhr8eF1ubo) - Conceptual overview explaining why rank-transformations are highly resilient against outliers and non-normal skewness.
-* [Mann-Whitney U Test / Wilcoxon Rank-Sum](https://www.youtube.com/watch?v=sVcwVQRHIc8) - Complete structural guide to calculating U metrics and rank evaluations for 2 independent groups.
-* [Kruskal-Wallis One-Way ANOVA by Ranks](https://www.youtube.com/watch?v=YtebGVx-Fxw) - The primary theoretical baseline for expanding non-parametric testing to multi-group configurations.
+- #### **10.4.2 Non-Parametric Methods & Robust Alternatives:**
+    * [Ranked-Based Statistics & Non-Parametric Frameworks](https://www.youtube.com/watch?v=fYhr8eF1ubo) - Conceptual overview explaining why rank-transformations are highly resilient against outliers and non-normal skewness.
+    * [Mann-Whitney U Test / Wilcoxon Rank-Sum](https://www.youtube.com/watch?v=sVcwVQRHIc8) - Complete structural guide to calculating U metrics and rank evaluations for 2 independent groups.
+    * [Kruskal-Wallis One-Way ANOVA by Ranks](https://www.youtube.com/watch?v=YtebGVx-Fxw) - The primary theoretical baseline for expanding non-parametric testing to multi-group configurations.
 
-#### **10.4.3 Assumptions Testing & Effect Sizes:**
-* [Levene's Test & Homogeneity of Variance](https://www.youtube.com/watch?v=DEkPZv5ppHI) - Foundations for testing variance consistency across groups via absolute deviation analyses before launching linear frameworks.
-* [R-Squared vs. Eta-Squared Explanations](https://www.youtube.com/watch?v=2AQKmw14mHM) - Concepts for estimating proportion of variance explained by specific data splits.
-* [Odds Ratios & Log(Odds) Intuitives](https://www.youtube.com/watch?v=ftYdEm6pEkE) - Mathematical tracking for proportional classification probabilities.
+- #### **10.4.3 Assumptions Testing & Effect Sizes:**
+    * [Levene's Test & Homogeneity of Variance](https://www.youtube.com/watch?v=DEkPZv5ppHI) - Foundations for testing variance consistency across groups via absolute deviation analyses before launching linear frameworks.
+    * [R-Squared vs. Eta-Squared Explanations](https://www.youtube.com/watch?v=2AQKmw14mHM) - Concepts for estimating proportion of variance explained by specific data splits.
+    * [Odds Ratios & Log(Odds) Intuitives](https://www.youtube.com/watch?v=ftYdEm6pEkE) - Mathematical tracking for proportional classification probabilities.
 
-#### **10.4.4 Probability Distributions & Decision Curves:**
-* [Chi-Square Distribution & Independence Testing](https://www.youtube.com/watch?v=dYJLUvo0Q6g) - Mapping goodness-of-fit and categorical association metrics.
-* [Normal Distribution & Central Limit Theorem](https://www.youtube.com/watch?v=ENnlSlvQHO0) - Mathematical guarantees underpinning why large-sample rank statistics converge smoothly to normal Z-scores.
-* [P-Values & False Discovery Rates (FDR)](https://www.youtube.com/watch?v=HKDqlYSLt68) - Strategy reference for managing error propagation (Type I errors) during multiple pairwise post-hoc evaluations.
-* [Hypothesis Testing, Type I & Type II Errors](https://www.youtube.com/watch?v=zJ8e_wAWUzE) - The core framework for controlling alpha thresholds and beta error probabilities in analytics pipelines.
-* [The Power of Statistical Analysis](https://www.youtube.com/watch?v=VekJxtk4BYM) - Reference for evaluating sample size sufficiency relative to targeting explicit downstream effect sizes.
+- #### **10.4.4 Probability Distributions & Decision Curves:**
+    * [Chi-Square Distribution & Independence Testing](https://www.youtube.com/watch?v=dYJLUvo0Q6g) - Mapping goodness-of-fit and categorical association metrics.
+    * [Normal Distribution & Central Limit Theorem](https://www.youtube.com/watch?v=ENnlSlvQHO0) - Mathematical guarantees underpinning why large-sample rank statistics converge smoothly to normal Z-scores.
+    * [P-Values & False Discovery Rates (FDR)](https://www.youtube.com/watch?v=HKDqlYSLt68) - Strategy reference for managing error propagation (Type I errors) during multiple pairwise post-hoc evaluations.
+    * [Hypothesis Testing, Type I & Type II Errors](https://www.youtube.com/watch?v=zJ8e_wAWUzE) - The core framework for controlling alpha thresholds and beta error probabilities in analytics pipelines.
+    * [The Power of Statistical Analysis](https://www.youtube.com/watch?v=VekJxtk4BYM) - Reference for evaluating sample size sufficiency relative to targeting explicit downstream effect sizes.
