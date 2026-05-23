@@ -766,7 +766,7 @@ graph TD
         - For Welch's $t$-test, $df$ is calculated using the Welch–Satterthwaite equation, which often results in a non-integer value: $df = \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2}{\frac{\left(s_1^2 / n_1\right)^2}{n_1 - 1} + \frac{\left(s_2^2 / n_2\right)^2}{n_2 - 1}}$
         - Map to Distribution: The calculated $t$-statistic is mapped onto a Student's $t$-distribution curve with the computed $df$, and corresponding $p$-value is calculated.
     - **Effect Size: Cohen's D:** 
-        - $$d = \frac{\bar{x}_1 - \bar{x}_2}{s_{\text{pooled}}}$$
+        - $$d = \frac{\bar{x}\_1 - \bar{x}\_2}{s\_{\text{pooled}}}$$
     - **Confidence Interval:**
         - $$\text{CI} = (\bar{x}\_1 - \bar{x}\_2) \pm t^* \times \sqrt{\frac{s\_1^2}{n\_1} + \frac{s\_2^2}{n\_2}}$$
         - $t^*$ is the critical value from the Student's $t$-distribution for the chosen confidence level
@@ -778,7 +778,7 @@ graph TD
         - The test calculates an F-statistic, which is the ratio of these two variances. If the variance between the groups is significantly larger than the variance within the groups, the groups are highly likely to have different means.
     - **Mathematical Formula:**
         - $$F = \frac{MS_{\text{between}}}{MS_{\text{within}}} = \frac{SS_{\text{between}} / df_{\text{between}}}{SS_{\text{within}} / df_{\text{within}}}$$
-        - $SS\_{\text{between}} = \sum\_{j=1}^{k} n\_j (\bar{x}\_j - \bar{x}\_{\text{grand}})^2$  (where $k$ is number of groups, $n_j$ is group sample size)
+        - $SS\_{\text{between}} = \sum\_{j=1}^{k} (\bar{x}\_j - \bar{x}\_{\text{grand}})^2$  (where $k$ is number of groups, $n_j$ is group sample size)
         - $SS_{\text{within}} = \sum_{j=1}^{k} \sum_{i=1}^{n_j} (x_{ij} - \bar{x}_j)^2$
         - $df_{\text{between}} = k - 1$
         - $df_{\text{within}} = N - k$  ($N$ is total sample size across all groups)
