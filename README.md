@@ -677,3 +677,156 @@ graph TD
     Krusskal --> Rank2
 ```
 
+#### **Basics:**
+1. **Statistical tests:** determine whether an observed pattern or difference in data is likely a genuine phenomenon or just a random noise.
+2. **Effect size:** quantifies the magnitude of a phenomenon or the strength of a relationship. Unlike p-values, effect size is entirely independent of sample size.
+3. **Confidence Interval: (CI)** provides a range of plausible values for an unknown population parameter, calculated from the sample data at a chosen confidence level (typically $95\%$).<br/>
+**Interpretation:** A $95\%$ CI implies that if we were to repeat the experiment or resample the data 100 times and calculate a interval each time, 95 of those 100 calculated intervals would contain the true population parameter.
+
+#### **All Statistical Tests Explained:**
+1. **Chi Squared ($\chi^2$):** 
+    - **Aim:** To determine whether there is a statistically significant association between two categorical variables evaluated from the same sample population. It tells if the distribution of one variable depends on the other.
+    - **Mathematical background:**
+        - **Observed counts ($O$):** count of data falling into distinct categories within a contingency table.
+        - **Expected counts ($E$):** counts of data that we would naturally expect to see if the two variables were completely independent of each other. $\text{Expected Value} = \frac{(\text{Row Total}) \times (\text{Column Total})}{\text{Grand Total}}$
+    - **Mechanism and Formula:**
+        - The test sums up the squared normalized differences between these observed and expected values. If the total deviation is large, it suggests independence is highly unlikely.
+        - $$\chi^2 = \sum \frac{(O_{i} - E_{i})^2}{E_{i}}$$
+    - **Null Hypothesis ($H_0$):** The two categorical variables are independent of each other. (no relationship)
+    - **Alternate Hypothesis ($H_1$):** The two categorical variables are dependent on each other. (There is a significant relationship between them).
+    - **$p$-value:** The calculated $\chi^2$ statistic is mapped to a Chi-Square distribution curve corresponding to those degrees of freedom [$df = (r - 1) \times (c - 1)$.]
+    - **Effect Size: Cramér's $V$:**
+        - $$V = \sqrt{\frac{\chi^2}{n \times \min(r-1, c-1)}}$$
+        - Where $n$ is the grand total sample size, $r$ is rows, and $c$ is columns.
+2. **G-Test:**
+    - **Aim:** To determine whether observed frequencies in categorical data significantly deviate from expected frequencies.
+    - **Mechanism:** While the Chi-Square test uses a linear approximation of deviations, the G-test uses the log-likelihood ratio. It calculates the KL Divergence between the observed distribution and expected distributions.
+    - **Mathematical Formula:**
+        - $$G = 2 \sum_{i} O_i \ln\left(\frac{O_i}{E_i}\right)$$
+    - **$H_0, H_1, p \text{ value, Effect Size}:$** Same as $\chi^2$ test.
+3. **Fisher's Exact Test:**
+    - **Aim:** to determine if there are non-random associations between two categorical variables in a $2 \times 2$ contingency table (Both are boolean variables), especially when sample sizes are small (e.g., when expected cell counts fall below 5).
+    - **Mechanism:**
+        - Fisher's Exact Test calculates the exact probability of obtaining the observed configuration of data directly from the combinatorial possibilities.
+        - $$p = \frac{\binom{a+b}{a} \binom{c+d}{c}}{\binom{n}{a+c}}$$
+        - for the following standard $2 \times 2$ contingency table:
+        
+|       -       | Column 1 | Column 2 |     Row Totals    |
+|:-------------:|:--------:|:--------:|:-----------------:|
+|     Row 1     |     a    |     b    |       a + b       |
+|     Row 2     |     c    |     d    |       c + d       |
+| Column Totals |   a + c  |   b + d  | n = a + b + c + d |
+- 
+    - **Null Hypothesis ($H_0$):** The two categorical variables are independent.
+    - **Alternate Hypothesis ($H_1$):** The two variables are dependent.
+    - **Effect size: Odds Ratio (OR)** which measures the odds of an event occurring in one group compared to another:
+        - $$\text{OR} = \frac{a / b}{c / d} = \frac{ad}{bc}$$
+        - $\text{OR} = 1$: No association.
+        - $\text{OR} > 1$: Higher odds of the outcome in Row 1 compared to Row 2.
+        - $\text{OR} < 1$: Lower odds of the outcome in Row 1 compared to Row 2.
+4. **Pearson’s Correlation Coefficient ($r$):**
+    - **Aim:** To measure the strength and direction of a linear relationship between two continuous, normally distributed variables.
+    - **Mechanism:**
+        - The coefficient scales the covariance of the two variables by the product of their individual standard deviations.
+        - $$\text{Pearson's } r = \frac{\text{Shared Variance}}{\text{Independent Variance}}$$
+        - By dividing the shared variance by the total individual variability, it normalizes the result into a dimensionless index that is strictly bounded between $-1.0$ and $+1.0$, completely stripping away the original units of measurement.
+    - **Mathematical Formula:**
+        - $$r = \frac{\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})}{\sqrt{\sum_{i=1}^{n} (x_i - \bar{x})^2} \sqrt{\sum_{i=1}^{n} (y_i - \bar{y})^2}}$$
+    - **Null Hypothesis ($H_0$):** There is no linear relationship between the two variables in the population. 
+    - **Alternate Hypothesis ($H_1$):** There is a significant linear relationship between the two variables in the population.
+    - **$p$ value:** I am not completely certain how this is calculated, but from descriptions I have read, it seems we convert the given $r$ value to a t statistic and perform a simple t-test to obtain the $p$ value.
+    - **Effect Size:** The $r$ value itself acts as the effect size.
+    - **Confidence Interval:** The CI is generally calculated $\text{CI} = z \pm z^* \times SE$
+        - Because the sampling distribution of $r$ becomes highly skewed as $|r|$ approaches $1$, we cannot calculate a symmetric confidence interval directly on $r$. Instead, we use Fisher’s $z$-transformation to convert $r$ into a normally distributed variable ($z_r$)
+        - $$z_r = \text{arctanh}(r) = \frac{1}{2} \ln\left(\frac{1+r}{1-r}\right)$$
+        - $$SE_{z_r} = \frac{1}{\sqrt{n - 3}}$$
+        - $$\text{CI}_{z_r} = z_r \pm z^* \times SE_{z_r}$$
+        - $$\text{CI}_r = \tanh(\text{bounds of } \text{CI}_{z_r}) = \frac{e^{2z} - 1}{e^{2z} + 1}$$
+5. **Spearman’s Rank Correlation Coefficient: ($r_s$)**
+    - **Aim:** to measure the strength and direction of a monotonic relationship between two variables.
+    - **Mechanism:** The test converts raw data points into ordinal ranks (1st, 2nd, 3rd, etc.) independently for each variable. It then runs the exact algebraic covariance-over-variance logic of Pearson's correlation on those assigned ranks.
+    - **Mathematical Formula:**
+        - $$\rho = 1 - \frac{6 \sum d_i^2}{n(n^2 - 1)}$$
+    - **Null Hypothesis: ($H_0$)** there is no monotonic association between the two variables in the population. 
+    - **Alternate Hypothesis: ($H_1$)** there is a significant monotonic relationship between the two variables in the population.
+    - **$p$ value:** Almost identical to the method of calculation as in pearson's correlation coeffecient.
+    - **Confidence Interval:** Found by bootstrapping similar to the method described in Hartigan's Dip Test P-value calculation.
+6. **Independent Samples $t$-test & Welche's $t$-test:**
+    - **Aim:** To determine whether the population means of two independent groups are significantly different from each other.
+    - **Mechanism:** The test calculates the absolute difference between the two sample means ($\bar{x}_1 - \bar{x}_2$) and scales it by the standard error of the difference.
+        - **Student's $t$-test:** Assumes the two populations have equal variances (uses a pooled variance).
+        - **Welch's $t$-test:** Does not assume equal variances. This is the modern default choice in software packages because it is highly robust against unequal variances and unequal sample sizes.
+    - **Mathematical Formula:**
+        - **Student's $t$-test:** $t = \frac{\bar{x}_1 - \bar{x}_2}{s_p\sqrt{\frac{1}{n_1} + \frac{1}{n_2}}}$
+        - **Welch's $t$-test:** $t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
+    - **Null Hypothesis ($H_0$):** The true difference between the two population means is zero.
+    - **Alternate Hypothesis ($H_1$):** The true difference between the two population means is not zero.
+    - **$p$-value:**
+        - For the standard pooled variance $t$-test: $df = n_1 + n_2 - 2$.
+        - For Welch's $t$-test, $df$ is calculated using the Welch–Satterthwaite equation, which often results in a non-integer value: $df = \frac{\left(\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}\right)^2}{\frac{\left(s_1^2 / n_1\right)^2}{n_1 - 1} + \frac{\left(s_2^2 / n_2\right)^2}{n_2 - 1}}$
+        - Map to Distribution: The calculated $t$-statistic is mapped onto a Student's $t$-distribution curve with the computed $df$, and corresponding $p$-value is calculated.
+    - **Effect Size: Cohen's D:** 
+        - $$d = \frac{\bar{x}_1 - \bar{x}_2}{s_{\text{pooled}}}$$
+    - **Confidence Interval:**
+        - $$\text{CI} = (\bar{x}_1 - \bar{x}_2) \pm t^* \times \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}$$
+        - $t^*$ is the critical value from the Student's $t$-distribution for the chosen confidence level
+7. **One-way and Welche Corrected ANOVA (Analysis of Variance):**
+    - **Aim:** To determine whether there is a statistically significant difference among the population means of three or more independent groups.
+    - **Mechanism:** ANOVA analyzes variance to compare means. It partitions the total variance in the entire dataset into two components:
+        - Between-Group Variance ($MS_{\text{between}}$): How much the individual group means deviate from the overall grand mean. This represents the signal of an actual treatment effect.
+        - Within-Group Variance ($MS_{\text{within}}$ or Error): How much individual data points deviate from their own specific group mean. This represents background noise.
+        - The test calculates an F-statistic, which is the ratio of these two variances. If the variance between the groups is significantly larger than the variance within the groups, the groups are highly likely to have different means.
+    - **Mathematical Formula:**
+        - $$F = \frac{MS_{\text{between}}}{MS_{\text{within}}} = \frac{SS_{\text{between}} / df_{\text{between}}}{SS_{\text{within}} / df_{\text{within}}}$$
+        - $SS_{\text{between}} = \sum_{j=1}^{k} (\bar{x}_j - \bar{x}_{\text{grand}})^2$  (where $k$ is number of groups, $n_j$ is group sample size)
+        - $SS_{\text{within}} = \sum_{j=1}^{k} \sum_{i=1}^{n_j} (x_{ij} - \bar{x}_j)^2$
+        - $df_{\text{between}} = k - 1$
+        - $df_{\text{within}} = N - k$  ($N$ is total sample size across all groups)
+        - **Welche's Correction:** Instead of pooling variances into a single denominator, Welch’s ANOVA introduces a weighting factor ($w_j$) for each group based entirely on its individual sample size ($n_j$) and individual variance ($s_j^2$):$$w_j = \frac{n_j}{s_j^2}$$
+    - **Null Hypothesis ($H_0$):** The true population means of all groups are exactly equal. 
+    - **Alternate Hypothesis ($H_1$):** At least one group population mean is significantly different from the others.
+    - **$p$-value:** 
+        - The test utilizes a pair of degrees of freedom: numerator ($df_{\text{between}}$) and denominator ($df_{\text{within}}$).
+        - $df_{between} = k - 1$ 
+        - $df_{within} = N - k$
+        - **Welche's Correction:** The numerator degrees of freedom remains $df_1 = k - 1$. However, the denominator degrees of freedom ($df_2$) is adjusted using the weights described previously.
+    - **Effect Size: Eta-Squared ($\eta^2$):**
+        - Measures the proportion of total variance attributed to the effect. It can be biased upward in small samples.
+        - $$\eta^2 = \frac{SS_{\text{between}}}{SS_{\text{total}}}$$
+    - **Confidence Interval:**
+        - $$\text{CI} = (\bar{x}_j - \bar{x}_m) \pm q^* \times \sqrt{\frac{MS_{\text{within}}}{2}\left(\frac{1}{n_j} + \frac{1}{n_m}\right)}$$
+8. **Mann-Whitney $U$ test:**
+    - **Aim:** To determine whether the distributions of two independent groups are significantly different from one another.
+    - **Mechanism:** The test pools all observations from both groups together and ranks them from smallest (rank 1) to largest (rank $n$). The test isolates the ranks of each group and calculates a $U$ statistic for each. 
+    - **Mathematical Formula:**
+        - For two groups with sample sizes $n_1$ and $n_2$, you first sum the ranks for each group ($R_1$ and $R_2$). 
+        - The $U$ statistic for each group is calculated as:
+        - $$U_1 = n_1 n_2 + \frac{n_1(n_1 + 1)}{2} - R_1$$
+        - $$U_2 = n_1 n_2 + \frac{n_2(n_2 + 1)}{2} - R_2$$
+        - The final test statistic $U$ is the smaller of the two values: $U = \min(U_1, U_2)$
+    - **Null Hypothesis ($H_0$):** The probability that an observation from population $X$ is greater than an observation from population $Y$ is exactly equal to the probability that an observation from $Y$ is greater than from $X$.
+    - **Alternate Hypothesis ($H_1$):** The distributions are stochastically unequal.
+    - **$p$-value:**
+        - Samples ($n_1, n_2 \le 20$): The p-value is determined exactly by using the exact permutation distribution of $U$, counting how many rank configurations yield a $U$ smaller than or equal to the observed $U$.
+        - Large Samples ($n_1, n_2 > 20$): The distribution of $U$ rapidly approaches a normal distribution. It is transformed into a standard $Z$-score using the expected mean ($\mu_U$) and standard deviation ($\sigma_U$) of $U$:
+            - $$\mu_U = \frac{n_1 n_2}{2}, \quad \sigma_U = \sqrt{\frac{n_1 n_2(n_1 + n_2 + 1)}{12}}$$
+            - $$Z = \frac{U - \mu_U}{\sigma_U}$$
+            - The p-value is then calculated from the standard normal distribution curve: $p = 2 \cdot P(Z \ge |Z|)$.
+    - **Effect Size: Rank-Biserial Correlation:**
+        - ($r_{\text{rb}}$), which scales the difference between the two $U$ statistics over the total number of pairs:
+        - $$r_{\text{rb}} = \frac{U_1 - U_2}{n_1 n_2} = 1 - \frac{2U}{n_1 n_2}$$
+
+9. **Kruskal-Wallis:**
+    - **Aim:** To determine whether there are statistically significant differences among the distributions of three or more independent groups.
+    - **Mechanism:** 
+        - The test pools all observations from all $k$ groups into a single dataset and ranks them from smallest (rank 1) to largest (rank $N$).
+        - It then calculates the $H$ statistic, which measures how much the average rank of each group deviates from the global average rank expected by chance.
+    - **Mathematical Formula:**
+        - $$H = \left[ \frac{12}{N(N+1)} \sum_{j=1}^{k} \frac{R_j^2}{n_j} \right] - 3(N+1)$$
+    - **Null Hypothesis ($H_0$):** The population distributions of all $k$ groups are stochastically identical.
+    - **Alternate Hypothesis ($H_1$):** At least one group population distribution is stochastically different from the others (it tends to yield systematically larger or smaller values).
+    - ***$p$-value:**
+        - Small Samples: For very small group sizes (e.g., $k=3$ and all $n_j \le 5$), the exact permutation distribution of $H$ is used to calculate the p-value.
+        - Large Samples: As sample size grows, the sampling distribution of $H$ rapidly approaches a Chi-Square ($\chi^2$) distribution. The degrees of freedom depend entirely on the number of groups: $$df = k - 1$$
+    - **Effect Size: Rank-Biserial Correlation:** Pair-wise effect size can be found and compared.
+    
