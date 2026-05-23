@@ -6,6 +6,8 @@ Project A.D.A.M. is a production-grade, containerized agent based platform desig
 
 By combining deterministic programmatic pipelines with LLM reasoning, the system takes raw, uncurated datasets and automatically generates comprehensive, insights-driven data reports with minimal human intervention.
 
+![Demo GIF](./documentation_media/demo.gif)
+
 ## **2. Table of Contents:**
 1. **[Overview](#1-overview)**
 2. **[Table of Contents](#2-table-of-contents)**
@@ -193,6 +195,12 @@ graph TD
     class RouterNode,ParseNode,MainNode,ConvoNode choice;
 ```
 
+#### **4.2.5 User Interface:**
+The user is allowed to pick the file they wish to analyse through the file input box on the page.
+Upon successful upload of the file, the user is prompted for their analysis targets in the chatbox. The user can decide to query the local model or specify their targets and continue:
+
+![File and Targets Page](./documentation_media/file_target.png)
+
 ---
 
 ### **4.3 Disguised Null Identification Subgraph:**
@@ -239,6 +247,10 @@ The graph is almost identical to the File and Targets Subgraph, the only differe
 
 The `null node` replaces the suspected null with the `pandas` standard `null`. It also records how many of each null is found and in which all columns, so that it may be stored and queried later.
 
+#### **4.3.4 User Interface:**
+The user is clearly shown the custom and default nulls being searched, along with a discovery analysis, of which nulls were found in which columns.
+
+![Null Analysis](./documentation_media/nulls.png)
 ---
 
 ### **4.4 Type Validation Subgraph:**
@@ -399,6 +411,12 @@ graph TD
     ApplyImputation --> END
 ```
 
+#### **4.5.5 User Interface:**
+
+The user interface of Type Validation and Missingnes Analysis are combined. The UI displays per column, the datatype of the column, any specific formatting present (prefix, suffix, date-time format), the type of missingness, its severity and the imputation suggested. It also updates the UI based on if the imputation has been processed.
+
+![Type Validation and Missingness Analysis](./documentation_media/type_missingness.png)
+
 ---
 
 ### **4.6 Univariate Analysis:**
@@ -551,6 +569,12 @@ Based on the datatype of the column the following attributes are calculated:
         - **Alternative Hypothesis ($H_1$):** The sample data is non-normally distributed.
         - **$P$-value:** Calculated by matching the computed $W$ statistic against the empirical, non-standardized sampling distribution of $W$ under a true null hypothesis.
 
+#### **4.6.3 User Interface:**
+The UI of this page showcases a brief graphical representation of the data (`Histogram` in the case of `numeric` and `Pie Chart` in the case of `categorical` data), along with some of the key statistical data calculated during the univariate analysis.
+
+![Univariate analysis1](./documentation_media/univariate_cat.png)
+![Univariate analysis2](./documentation_media/univariate_num.png)
+
 ---
 
 ### **4.7 Multivariate Analysis:**
@@ -682,13 +706,13 @@ graph TD
     Krusskal --> Rank2
 ```
 
-#### **Basics:**
+#### **4.7.3 Basics:**
 1. **Statistical tests:** determine whether an observed pattern or difference in data is likely a genuine phenomenon or just a random noise.
 2. **Effect size:** quantifies the magnitude of a phenomenon or the strength of a relationship. Unlike p-values, effect size is entirely independent of sample size.
 3. **Confidence Interval: (CI)** provides a range of plausible values for an unknown population parameter, calculated from the sample data at a chosen confidence level (typically $95\%$).<br/>
 **Interpretation:** A $95\%$ CI implies that if we were to repeat the experiment or resample the data 100 times and calculate a interval each time, 95 of those 100 calculated intervals would contain the true population parameter.
 
-#### **All Statistical Tests Explained:**
+#### **4.7.4 All Statistical Tests Explained:**
 1. **Chi Squared ($\chi^2$):** 
     - **Aim:** To determine whether there is a statistically significant association between two categorical variables evaluated from the same sample population. It tells if the distribution of one variable depends on the other.
     - **Mathematical background:**
@@ -835,6 +859,14 @@ graph TD
         - Large Samples: As sample size grows, the sampling distribution of $H$ rapidly approaches a Chi-Square ($\chi^2$) distribution. The degrees of freedom depend entirely on the number of groups: $$df = k - 1$$
     - **Effect Size: Rank-Biserial Correlation:** Pair-wise effect size can be found and compared.
 
+#### **4.7.5 User Interface:**
+The user interface shows, actionable steps to take while incorporating into an ML pipeline, along with a graphical representation of the multivariate relation, in the form of a `Scatter-plot` in the case of `NumxNum` analysis and just a `progress-bar` showing the effect size of the statistical tests performed otherwise.
+
+The interface also features, a nav-bar which allows for filtering of the analysis data based on `datatypes` of the features and whether the results are `significant`.
+
+![Multivariate Dashboard](./documentation_media/multi_dash.png)
+![Multivariate Scatterplot](./documentation_media/multi_scatter.png)
+
 ---
 
 ### **4.8 Agentic Analysis and ChatBot Subgraph:**
@@ -886,6 +918,11 @@ graph TD
 
     Final --> END
 ```
+
+#### **4.8.5 User Interface:**
+The user interface features a chatbox where the user can query the analysed data. In the left half, the UI features all the insights (queries), it displays the documents retrieved from the vector DB, the code generated if any, the outputs of the code, any plots generated and the final text summary generated.
+
+![Hypothesis Analysis](./documentation_media/insights.png)
 
 ---
 
@@ -1021,3 +1058,58 @@ graph TD
 *   **Model:** Gemini 3.4 Flash Lite
 
 ## **6. Future Improvements:**
+1. Support for other data formats (E.g. `JSON`, `HS5`)
+2. Use `Polaris` for faster performance rather than `Pandas`.
+3. Allow Disguised Null Analysis Subgraph LLM Agent access to change default nulls as well.
+4. Allow for continuous data-streaming for univariate and multivariate analysis, instead of in chunks, for more responsive UI.
+5. Use more advanced coding models for better results.
+6. Use `llama-4` for better routing and also tool based results.
+7. Use `Postgre-SQL` for checkpointing rather than in-memory checkpointer.
+8. Add browser specific caching for page data.
+
+## **7. How to run:**
+### **7.1 Recommended: Using Docker-compose:**
+
+This method pulls pre-configured images for the React frontend, FastAPI backend, and Nginx proxy, ensuring the environment exactly matches the development setup.
+
+> Prerequisites: Docker and Docker Compose installed.
+
+1. **Clone the Repository**
+```bash
+git clone https://github.com/nullPointer0x43/Attention-Seeker.git
+cd Attention-Seeker
+```
+
+2. **Launch the Stack**
+```bash
+docker-compose up -d
+```
+
+3. **Access the Application**
+
+Frontend: Open http://localhost:8080
+
+Backend API: all API Endpoints available on http://localhost:8000
+
+MinioDB: Admin Dashboard available on http://localhost:9001
+
+### **7.2 Manual Setup:**
+I used Python 3.11, since I was unable to find later versions (3.12+) which have stable support for the CUDA-compatible binaries required for PyTorch inference on NVIDIA GPUs.
+
+It is required to run services such as Redis and a custom Sandbox container, hence it is recommended to run it through the custom Docker-compose file as specified above.
+
+However each of these services maybe installed on the host system and configured.
+
+Each of the configuration data (E.g. Port exposed by the service and the username and password configurations) must be changed in the ./Backend/URLs.py file.
+
+## **8. Additional Links:**
+All the custom docker images are available on docker-hub:
+
+1. Frontend + Nginx Container:
+    https://hub.docker.com/r/kinjal1234/react-nginx-frontend
+2. Main Backend Server:
+    https://hub.docker.com/r/kinjal1234/fastapi-pipeline-api
+3. Postgre-SQL Server with custom startup scripts:
+    https://hub.docker.com/r/kinjal1234/postgres-metadata
+4. Custom Sandbox:
+    https://hub.docker.com/r/kinjal1234/sandbox-runtime
