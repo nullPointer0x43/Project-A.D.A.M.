@@ -835,6 +835,8 @@ graph TD
         - Large Samples: As sample size grows, the sampling distribution of $H$ rapidly approaches a Chi-Square ($\chi^2$) distribution. The degrees of freedom depend entirely on the number of groups: $$df = k - 1$$
     - **Effect Size: Rank-Biserial Correlation:** Pair-wise effect size can be found and compared.
 
+---
+
 ### **4.8 Agentic Analysis and ChatBot Subgraph:**
 #### **4.8.1 Aim:**
 The aim of this subgraph is to use an AI agent to help analyse the given data. The agent has access to all previous analysis as well as the ability to write and execute code for additional data analysis.
@@ -885,12 +887,16 @@ graph TD
     Final --> END
 ```
 
+---
+
 ### **4.9 Report Node:**
 #### **4.9.1 Aim:**
 This node generates an overall PDF report of all the analysis performed so far. This retrieves all the significant tests and relevant graphical representations of univariate and multivariate analysis, as well as the results of the agentic analysis.
 
 #### **4.9.2 Sample:**
 A Sample report is provided in the uploaded repository.
+
+---
 
 ### **4.10 Overall Graph Visualised:**
 ```mermaid
@@ -1013,3 +1019,5 @@ graph TD
 #### **5.3.10 `gemini-api-bridge` (Advanced Analytical Agent Core):**
 *   **Tech Stack:** Google GenAI SDK Client Layer.
 *   **Model:** Gemini 3.4 Flash Lite
+
+## **6. Future Improvements:**
