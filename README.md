@@ -1110,7 +1110,7 @@ graph TD
 │   └── Redis.py               # Direct tracking channel to the active Redis session cache
 │
 ├── Airlines_data_report.pdf   # Production sample of an analytics report compiled by the agent
-└── Notes.pdf                  # Core architectural blueprints and project design documents
+└── ADAM_notes.pdf             # Core architectural blueprints and project design documents
 ```
 
 ## **7. Future Improvements:**
