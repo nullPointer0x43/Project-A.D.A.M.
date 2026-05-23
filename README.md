@@ -829,4 +829,83 @@ graph TD
         - Small Samples: For very small group sizes (e.g., $k=3$ and all $n_j \le 5$), the exact permutation distribution of $H$ is used to calculate the p-value.
         - Large Samples: As sample size grows, the sampling distribution of $H$ rapidly approaches a Chi-Square ($\chi^2$) distribution. The degrees of freedom depend entirely on the number of groups: $$df = k - 1$$
     - **Effect Size: Rank-Biserial Correlation:** Pair-wise effect size can be found and compared.
-    
+
+### **4.8 Agentic Analysis and ChatBot Subgraph:**
+#### **4.8.1 Aim:**
+The aim of this subgraph is to use an AI agent to help analyse the given data. The agent has access to all previous analysis as well as the ability to write and execute code for additional data analysis.
+
+#### **4.8.2 Theory:**
+1. **Multi-Query Retrieval:**
+    - Standard RAG struggles when a user query is ambiguous, short, or uses vocabulary that doesn't perfectly match the indexed documents. Vector search is highly sensitive to phrasing.
+    - Multi-Query Retrieval solves this by using a Large Language Model (LLM) to take the initial user prompt and generate multiple variations (usually 3 to 5) phrased from different perspectives or using alternative synonyms.
+2. **Reciprocal Rank Fusion / RRF:**
+    - Reciprocal Rank Fusion (RRF) is a algorithm that merges these sub-query retrievals into a single, optimized ranking based entirely on the relative position (rank) of a document across the lists, rather than its raw similarity score
+    - $$RRF\_Score(d \in D) = \sum_{m \in M} \frac{1}{k + r_m(d)}$$
+
+#### **4.8.3 Graph Flow:**
+The graph starts off by prompting the user on how they can help.
+
+Based on the query it receives, it prompts its local llm (ollama-3) to generate 5 synonymous queries which are used for RAG retrieval. The similarity scores of these retrieved documents are merged into a single llist of 5 documents using RRF.
+
+This retrieved documents and the user prompt is passsed to an llm router, which decides if there is enough relevant information to answer the asked question, if so it routes directly to the final generation node. If it decides that there is more data needed relevant to the prompt, it may code a program and execute it on the dataset to acquire the relevant information. Hence it routes to the code node.
+
+The code node prompts a coding agent (Gemini-3.4-flash-lite), to generate the relevant code based on the prompt, and is passed onto the executor node.
+
+The executor node passes this data into the custom SandBox container that is built for isolation and restriction, where the code is executed on the data and the results are retrieved. If an error occurs, the error logs are passed back to the coding node where the agent is allowed to rewrite the code to correct for the errors.
+
+This process of retrying can occur for a max of 5 times, before it falls-back to answering based on the logs and retrieved documents.
+
+In the final generation node, an llm is prompted to generate an appropriate reply to the user prompt given the retrieved documents and the code outputs.
+
+#### **4.8.4 Graph Visualization:**
+```mermaid
+graph TD
+    START([START])
+    Prompt
+    Router
+    CODE[Coding agent]
+    Executor
+    Final[Final Generator]
+    END
+
+    START --> Prompt
+    Prompt --> Router
+    Router --> |CODE| CODE
+    CODE --> |iteration < 5| Executor
+    Executor --> |error| CODE
+
+    Router --> |RAG| Final
+    Executor --> |success| Final
+
+    Final --> END
+```
+
+### **4.9 Report Node:**
+#### **4.9.1 Aim:**
+This node generates an overall PDF report of all the analysis performed so far. This retrieves all the significant tests and relevant graphical representations of univariate and multivariate analysis, as well as the results of the agentic analysis.
+
+#### **4.9.2 Sample:**
+A Sample report is provided in the uploaded repository.
+
+### **4.10 Overall Graph Visualised:**
+```mermaid
+graph TD
+    START([START])
+    FILE[File and Targets Analysis]
+    NULL[Disguised Null Analysis]
+    TYPE[Type Validation Analysis]
+    UNIVARIATE[Univariate Analysis]
+    MULTIVARIATE[Multivariate Analysis]
+    AGENT[Agentic and RAG Querying]
+    REPORT[Report Generation]
+
+    START --> FILE
+    FILE --> NULL
+    NULL --> TYPE
+    TYPE --> UNIVARIATE
+    UNIVARIATE --> MULTIVARIATE
+    MULTIVARIATE --> AGENT
+    AGENT --> AGENT
+    AGENT -.- REPORT
+```
+
