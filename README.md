@@ -28,6 +28,17 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
     - **[4.8 Agent Analysis Subgraph](#48-agentic-analysis-and-chatbot-subgraph)**
     - **[4.9 Report Node](#49-report-node)**
     - **[4.10 Overall Graph](#410-overall-graph-visualised)**
+5. **[System Design and Tech Stack](#5-system-design-and-tech-stack)**
+    - **[5.1 Architectural Overview](#51-architectural-overview)**
+    - **[5.2 Architectural Flow](#52-high-level-system-architecture)**
+    - **[5.3 Container-Wise Explanation](#53-container-wise-explanation)**
+6. **[Repository Structure](#6-repository-structure)**
+7. **[Future Improvement](#7-future-improvements)**
+8. **[How to Run?](#7-how-to-run)**
+    - **[8.1 Docker-compose](#81-recommended-using-docker-compose)**
+    - **[8.2 Manual Setup](#82-manual-setup)**
+9. **[Additional Links](#9-additional-links)**
+10. **[Credits and References](#10-credits-and-references)**
 
 ## **3. Statistical Background:**
 ### **3.1 Basics:**
@@ -364,7 +375,7 @@ Now a brief description of the implementation and explanation of the imputation 
 1. **Simple Statistical: (Median / Mode)** This is the simplest imputation, where the missing values are imputed with the `median` or `mode` of the remaining values in the column.
 2. **Conditional Statistical: (Median / Mode / Forward-Fill)** The main logic with conditional statistical impuptation is to group the column under observation based on the closest related column, and then impute each group as needed.<br/>
 Forward-Fill refers to the imputation technique, where the last available value in the column is used to fill the missing values.<br />
-Now, how do we decide which column is the most related to the column which we have to impute (`Impute Target`)? This is done with the help of similarity metrics between the columns, the metrics depending on the data type of the columns described below. The mathematics of these metrics are discussed in the [Multivariate Subgraphs Section.](#)
+Now, how do we decide which column is the most related to the column which we have to impute (`Impute Target`)? This is done with the help of similarity metrics between the columns, the metrics depending on the data type of the columns described below. The mathematics of these metrics are discussed in the [Multivariate Subgraphs Section.](#47-multivariate-analysis)
 
 |                                  | Category    | Numerical / Datetime / timedelta |
 |----------------------------------|-------------|----------------------------------|
@@ -711,6 +722,13 @@ graph TD
 2. **Effect size:** quantifies the magnitude of a phenomenon or the strength of a relationship. Unlike p-values, effect size is entirely independent of sample size.
 3. **Confidence Interval: (CI)** provides a range of plausible values for an unknown population parameter, calculated from the sample data at a chosen confidence level (typically $95\%$).<br/>
 **Interpretation:** A $95\%$ CI implies that if we were to repeat the experiment or resample the data 100 times and calculate a interval each time, 95 of those 100 calculated intervals would contain the true population parameter.
+4. **Levene's Test:**
+    - **Aim:** To determine whether three or more independent groups have equal population variances.
+    - **Mechanism:**
+        - Levene’s test bypasses the raw data values and converts them into absolute deviation scores
+        - The test runs a standard, classic One-Way ANOVA directly on the deviation scores.
+        - If that underlying ANOVA finds that the average deviation size differs significantly between groups, it tells you that the group spreads are fundamentally unequal.
+        - ANOVA is explained in the section below.
 
 #### **4.7.4 All Statistical Tests Explained:**
 1. **Chi Squared ($\chi^2$):** 
@@ -1057,7 +1075,46 @@ graph TD
 *   **Tech Stack:** Google GenAI SDK Client Layer.
 *   **Model:** Gemini 3.4 Flash Lite
 
-## **6. Future Improvements:**
+## **6. Repository Structure:**
+## 📂 Repository Structure
+
+```text
+├── Backend/
+│   ├── Nodes/                 # Modular subgraphs defining autonomous agent logic
+│   ├── ReportTemplates/       # Jinja2 HTML layouts for dynamic PDF generation
+│   ├── API.py                 # Core application gateway & service endpoints
+│   ├── ChromaDB.py            # Vector database abstraction layer for semantic search
+│   ├── LLM.py                 # Orchestrator for local Ollama instances & Gemini API
+│   ├── Minio.py               # Interface wrapper for MinIO object storage
+│   ├── PostgreSQL.py          # Relational database connector & transaction engine
+│   ├── Redis.py               # Memory cache adapter for state & session tracking
+│   ├── SandBox.py             # Isolated execution environment management engine
+│   └── URLs.py                # Central service topology & network configuration
+│
+├── Frontend/
+│   └── src/                   # React web interface
+│       ├── App.jsx            # Layout manager and application root router
+│       ├── main.css           # Global unified stylesheet declarations
+│       ├── main.jsx           # Client-side Virtual DOM mounting point
+│       └── services.js        # Axios/Fetch client mapping to the Backend API
+│
+├── PostgreSQL/
+│   ├── init_db.py             # Database seeding, migration, & schema initialization
+│   └── models.py              # Declarative relational schema blueprints (SQLAlchemy/SQLModel)
+│
+├── Redis/
+│   └── redis.conf             # In-memory data store instance constraints & networking profiles
+│
+├── SandBox/                   # Secure, ephemeral code execution workspace
+│   ├── Main.py                # Microservice API governing runtime session lifecycles
+│   ├── Minio.py               # Dedicated object transport wrapper for sandbox execution artifacts
+│   └── Redis.py               # Direct tracking channel to the active Redis session cache
+│
+├── Airlines_data_report.pdf   # Production sample of an analytics report compiled by the agent
+└── Notes.pdf                  # Core architectural blueprints and project design documents
+```
+
+## **7. Future Improvements:**
 1. Support for other data formats (E.g. `JSON`, `HS5`)
 2. Use `Polaris` for faster performance rather than `Pandas`.
 3. Allow Disguised Null Analysis Subgraph LLM Agent access to change default nulls as well.
@@ -1067,8 +1124,8 @@ graph TD
 7. Use `Postgre-SQL` for checkpointing rather than in-memory checkpointer.
 8. Add browser specific caching for page data.
 
-## **7. How to run:**
-### **7.1 Recommended: Using Docker-compose:**
+## **8. How to run:**
+### **8.1 Recommended: Using Docker-compose:**
 
 This method pulls pre-configured images for the React frontend, FastAPI backend, and Nginx proxy, ensuring the environment exactly matches the development setup.
 
@@ -1093,7 +1150,7 @@ Backend API: all API Endpoints available on http://localhost:8000
 
 MinioDB: Admin Dashboard available on http://localhost:9001
 
-### **7.2 Manual Setup:**
+### **8.2 Manual Setup:**
 I used Python 3.11, since I was unable to find later versions (3.12+) which have stable support for the CUDA-compatible binaries required for PyTorch inference on NVIDIA GPUs.
 
 It is required to run services such as Redis and a custom Sandbox container, hence it is recommended to run it through the custom Docker-compose file as specified above.
@@ -1102,7 +1159,7 @@ However each of these services maybe installed on the host system and configured
 
 Each of the configuration data (E.g. Port exposed by the service and the username and password configurations) must be changed in the ./Backend/URLs.py file.
 
-## **8. Additional Links:**
+## **9. Additional Links:**
 All the custom docker images are available on docker-hub:
 
 1. Frontend + Nginx Container:
@@ -1113,3 +1170,40 @@ All the custom docker images are available on docker-hub:
     https://hub.docker.com/r/kinjal1234/postgres-metadata
 4. Custom Sandbox:
     https://hub.docker.com/r/kinjal1234/sandbox-runtime
+
+## **10. Credits and References:**
+
+### **10.1 Multi-Agent Systems & Orchestration:**
+* [LangGraph Python Framework Reference](https://reference.langchain.com/python/langgraph) - Core state-machine framework documentation used to construct the modular subgraphs inside the `Backend/Nodes` architecture.
+* [LangChain Overview Ecosystem Documentation](https://reference.langchain.com/python/langchain/overview) - Underlying abstractions for LLM integration, prompt templates, and pipeline management.
+
+### **10.2 Core Infrastructure & Storage:**
+* [redis-py Client Documentation](https://redis.io/docs/latest/develop/clients/redis-py/) - Reference guide utilized to implement memory caching, active state tracking, and secure session management between the backend and isolated sandbox microservices.
+
+### **10.3 Exploratory Data Analysis & Advanced Machine Learning:**
+* [IBM Exploratory Data Analysis for Machine Learning](https://www.coursera.org/learn/ibm-exploratory-data-analysis-for-machine-learning) - Coursera methodology guidelines foundational to structuring the autonomous data cleaning and automated visualization strategies.
+
+### **10.4 Statistical Theory Foundations (StatQuest with Josh Starmer):**
+A significant portion of the statistical tests knowledge (including variance validation and non-parametric rank assessments) was built following the conceptual breakdowns from the [StatQuest Channel Hub](https://www.youtube.com/@statquest).
+
+#### **10.4.1 Parametric Modeling & Analysis of Variance (ANOVA):**
+* [One-Way ANOVA Clearly Explained](https://www.youtube.com/watch?v=fXSMD-p3n7c) - The conceptual baseline for between-group vs. within-group variance breakdown.
+* [Two-Way ANOVA Concepts](https://www.youtube.com/watch?v=GOIUasSTgS8) - Foundations on interaction effects and multi-variable variance cross-examination.
+* [F-Distribution and F-Statistic Foundations](https://www.youtube.com/watch?v=0oc49DyA3hU) - Core mathematics mapping variance ratios to continuous right-tailed probability metrics.
+
+#### **10.4.2 Non-Parametric Methods & Robust Alternatives:**
+* [Ranked-Based Statistics & Non-Parametric Frameworks](https://www.youtube.com/watch?v=fYhr8eF1ubo) - Conceptual overview explaining why rank-transformations are highly resilient against outliers and non-normal skewness.
+* [Mann-Whitney U Test / Wilcoxon Rank-Sum](https://www.youtube.com/watch?v=sVcwVQRHIc8) - Complete structural guide to calculating U metrics and rank evaluations for 2 independent groups.
+* [Kruskal-Wallis One-Way ANOVA by Ranks](https://www.youtube.com/watch?v=YtebGVx-Fxw) - The primary theoretical baseline for expanding non-parametric testing to multi-group configurations.
+
+#### **10.4.3 Assumptions Testing & Effect Sizes:**
+* [Levene's Test & Homogeneity of Variance](https://www.youtube.com/watch?v=DEkPZv5ppHI) - Foundations for testing variance consistency across groups via absolute deviation analyses before launching linear frameworks.
+* [R-Squared vs. Eta-Squared Explanations](https://www.youtube.com/watch?v=2AQKmw14mHM) - Concepts for estimating proportion of variance explained by specific data splits.
+* [Odds Ratios & Log(Odds) Intuitives](https://www.youtube.com/watch?v=ftYdEm6pEkE) - Mathematical tracking for proportional classification probabilities.
+
+#### **10.4.4 Probability Distributions & Decision Curves:**
+* [Chi-Square Distribution & Independence Testing](https://www.youtube.com/watch?v=dYJLUvo0Q6g) - Mapping goodness-of-fit and categorical association metrics.
+* [Normal Distribution & Central Limit Theorem](https://www.youtube.com/watch?v=ENnlSlvQHO0) - Mathematical guarantees underpinning why large-sample rank statistics converge smoothly to normal Z-scores.
+* [P-Values & False Discovery Rates (FDR)](https://www.youtube.com/watch?v=HKDqlYSLt68) - Strategy reference for managing error propagation (Type I errors) during multiple pairwise post-hoc evaluations.
+* [Hypothesis Testing, Type I & Type II Errors](https://www.youtube.com/watch?v=zJ8e_wAWUzE) - The core framework for controlling alpha thresholds and beta error probabilities in analytics pipelines.
+* [The Power of Statistical Analysis](https://www.youtube.com/watch?v=VekJxtk4BYM) - Reference for evaluating sample size sufficiency relative to targeting explicit downstream effect sizes.
