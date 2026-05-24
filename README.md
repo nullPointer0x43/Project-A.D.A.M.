@@ -1116,14 +1116,13 @@ graph TD
 ```
 
 ## **7. Future Improvements:**
-1. Support for other data formats (E.g. `JSON`, `HS5`)
-2. Use `Polaris` for faster performance rather than `Pandas`.
-3. Allow Disguised Null Analysis Subgraph LLM Agent access to change default nulls as well.
+1. Support for other data formats (E.g. `JSON`, `.parquet`, `.HDF5`, `SQL`)
+2. Use `Polaris` rather than `Pandas` in backend for faster performance.
+3. Allow Disguised Null Analysis Subgraph LLM Agent to access and change default nulls as well.
 4. Allow for continuous data-streaming for univariate and multivariate analysis, instead of in chunks, for more responsive UI.
-5. Use more advanced coding models for better results.
-6. Use `llama-4` for better routing and also tool based results.
-7. Use `Postgre-SQL` for checkpointing rather than in-memory checkpointer.
-8. Add browser specific caching for page data.
+5. Use `llama-4` for better routing and also tool based results.
+6. Use `Postgre-SQL` for checkpointing rather than in-memory checkpointer.
+7. Add browser specific caching for page data.
 
 ## **8. How to run:**
 ### **8.1 Recommended: Using Docker-compose:**
@@ -1172,19 +1171,32 @@ All the custom docker images are available on docker-hub:
 4. Custom Sandbox:
     https://hub.docker.com/r/kinjal1234/sandbox-runtime
 
-## **10. Credits and References:**
+## **Technical References & Acknowledgments:**
+
+This project stands on the shoulders of foundational research in distributed graph computing, secure isolation container sandboxing, and multivariate statistical learning theory. Below are the core references and structural document links utilized in this architecture:
 
 ### **10.1 Multi-Agent Systems & Orchestration:**
-* [LangGraph Python Framework Reference](https://reference.langchain.com/python/langgraph) - Core state-machine framework documentation used to construct the modular subgraphs inside the `Backend/Nodes` architecture.
-* [LangChain Overview Ecosystem Documentation](https://reference.langchain.com/python/langchain/overview) - Underlying abstractions for LLM integration, prompt templates, and pipeline management.
+*   **[LangGraph Python Framework Reference](https://langchain-ai.github.io/langgraph/)**  
+    The core state-machine framework documentation used to construct the modular subgraphs, state validations, conditional edge transitions, and recursive fallback tracks inside the `Backend/Nodes` architecture.
+*   **[LangChain Overview Ecosystem Documentation](https://python.langchain.com/docs/introduction/)**  
+    The base abstractions layer providing schema integration wrappers for standardized prompt templates, programmatic output parsers, and external tool execution hooks.
 
 ### **10.2 Core Infrastructure & Storage:**
-* [redis-py Client Documentation](https://redis.io/docs/latest/develop/clients/redis-py/) - Reference guide utilized to implement memory caching, active state tracking, and secure session management between the backend and isolated sandbox microservices.
+*   **[redis-py Client Documentation](https://redis.io/docs/latest/develop/clients/redis-py/)**  
+    Reference engine implementation guide utilized to orchestrate fast in-memory task blocks, volatile runtime state caches, and inter-container communication vectors separating the API gateway from the computational sandboxes.
 
-### **10.3 Exploratory Data Analysis & Advanced Machine Learning:**
-* [IBM Exploratory Data Analysis for Machine Learning](https://www.coursera.org/learn/ibm-exploratory-data-analysis-for-machine-learning) - Coursera methodology guidelines foundational to structuring the autonomous data cleaning and automated visualization strategies.
+### **10.3 Exploratory Data Analysis & Statistical Theory:**
+*   **[IBM Exploratory Data Analysis for Machine Learning](https://www.coursera.org/learn/exploratory-data-analysis-for-machine-learning)**  
+    Methodological industry blueprints and pipeline progression standards foundational to structuring our autonomous feature profiling, data sanitization loops, and rule-driven visualization triggers.
+*   **Missing Data Typology Framework (Donald B. Rubin)**  
+    The foundational structural categorization separating MCAR, MAR, and MNAR probability states follows the definitive mathematical framework published in:  
+    *Rubin, D. B. (1976). [Inference and Missing Data](https://doi.org/10.1093/biomet/63.3.581). Biometrika, 63(3), 581–592.*
+*   **Multivariate Imputation by Chained Equations (Stef van Buuren)**  
+    The core iterative algorithm architecture utilized to resolve complex Missing at Random (MAR) value structures via fully conditional specification rules follows:  
+    *van Buuren, S. (2011). [Flexible Imputation of Missing Data](https://stefvanbuuren.name/fimd/). CRC Press / Taylor & Francis Group.*
+*   **Automated Imputation Design Reference**  
+    API architecture layouts and imputation strategy profiles (Simple, Iterative, and Neighbor-based) mapped out according to the **[Scikit-Learn Imputation User Guide](https://scikit-learn.org/stable/modules/impute.html)** standards.
 
-### **10.4 Statistical Theory Foundations (StatQuest with Josh Starmer):**
 A significant portion of the statistical tests knowledge (including variance validation and non-parametric rank assessments) was built following the conceptual breakdowns from the [StatQuest Channel Hub](https://www.youtube.com/@statquest).
 
 - #### **10.4.1 Parametric Modeling & Analysis of Variance (ANOVA):**
