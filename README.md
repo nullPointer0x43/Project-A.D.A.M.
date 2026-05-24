@@ -114,7 +114,7 @@ class DataAnalysis(BaseModel):
 
 All of the fields described in the classes are pretty self explanatory and are description by their Field descriptions.
 
-* **Current Info:** This variable describes any structures and data needed specific to the subgraph, hence it is set as type Any. The data structure changes based on the subgraph.
+* **Current Info:** This variable describes any structures and data needed specific to the subgraph, hence it is set as type `Any`. The data structure changes based on the subgraph.
 * **Current Data Info:** This is the persistent data being worked on and is passed throughout the graph so that each subgraph can perform its operations on the data.
 * **Log:** This contains error logs and are used for routing between nodes in each of the subgraphs.
 * **User Input:** This contains the user input pulled from the frontend.
@@ -293,7 +293,7 @@ class ColParsingData(BaseModel):
 All of the variable are described by their Field descriptions.
 
 #### **4.4.3 Graph Flow:**
-The Subgraph uses an llm to find the suspected type and formatting data of each column. It is a very small and simple subgraph which is visualised below, and is run for each and every column.
+The Subgraph uses an LLM to find the suspected type and formatting data of each column. It is a very small and simple subgraph which is visualised below, and is run for each and every column.
 
 
 #### **4.4.4 Graph Visualization:**
@@ -389,7 +389,7 @@ Now, how do we decide which column is the most related to the column which we ha
     Since this performs pair-wise comparisons, it is an $O(n^2)$ operation and is very memory and time ineffecient.
 
     - **Regressor:** The imputer isolates the specific column that has missing values. 
-        - It splits the dataset into two, the **Training Set** (All rows where the column is fully known) and the **Prediction Set** (All rows where Salary is blank.) <br/>
+        - It splits the dataset into two, the **Training Set** (All rows where the column is fully known) and the **Prediction Set** (All rows where the column is blank.) <br/>
         - A standard regression model (like a standard LinearRegression() or a single decision tree) is fit on that training data. The model learns the exact mathematical relationship between the known features and the target.
         - The feature columns ($X$) of the prediction set are passed into the trained model. The model outputs its best guesses, and those predicted values are dropped directly into the missing holes.
 
@@ -466,7 +466,7 @@ Based on the datatype of the column the following attributes are calculated:
 |        `skew`        |                  Measures asymmetry; positive values mean a long right tail, negative mean a long left tail.                  |                 $\gamma_1 = E\left[\left(\frac{X-\mu}{\sigma}\right)^3\right]$                 |
 |      `kurtosis`      | Measures tail-heaviness (Fisher’s definition), indicating the presence of extreme outliers relative to a normal distribution. |              $\beta_2 - 3 = E\left[\left(\frac{X-\mu}{\sigma}\right)^4\right] - 3$             |
 | `coeff_of_variation` |       Standardizes dispersion relative to the mean, allowing variance comparisons across columns with different scales.       |                                    $CV = \frac{\sigma}{\mu}$                                   |
-|         `MAD`        |                                       Shows average absolute distance around the center.                                      |                                  $\text{Median}(\|X - \mu\|)$                                  |
+|         `MAD (Median Of Absolute Deviations)`        |                                       Shows average absolute distance around the center.                                      |                                  $\text{Median}(\|X - \mu\|)$                                  |
 | `distribution_type`  | Categorizes the data's shape into left-skewed, right-skewed, multi-modal, uniform, or symmetric.                              | Hartigan's Dip Test                                                                            |
 | `normal`             | Evaluates whether the column matches a normal (Gaussian) bell curve shape at the chosen confidence level.                     | Shapiro-Wilk $p$-value $> \alpha$ (if $n < 5000$) else D'Agostino-Pearson $p$-value $> \alpha$ |
 
@@ -567,7 +567,7 @@ Based on the datatype of the column the following attributes are calculated:
         - **Aim:** Evaluates strict normality for smaller datasets (typically optimized for $n < 5000$). It determines whether a continuous sample was drawn from a normally distributed population.
         - **Mechanism:**
             - **Normal Expectations:** If we take a perfectly normal dataset of the same size, sorted it from smallest to largest, and plotted it, we would know exactly where each point should sit mathematically. This is our theoretical benchmark—what a perfect normal distribution is expected to look like.
-            - **"Ordered Data Points:** Next, we take our actual real-world data points and sort them from smallest to largest.
+            - **Ordered Data Points:** Next, we take our actual real-world data points and sort them from smallest to largest.
             - **The Line of Best Fit:** Now, we plot them against each other on a graph:
                 - X-axis: Where the points should be (Normal Expectations).
                 - Y-axis: Where the points actually are (Ordered Data).
@@ -722,14 +722,14 @@ graph TD
 #### **4.7.3 Basics:**
 1. **Statistical tests:** determine whether an observed pattern or difference in data is likely a genuine phenomenon or just a random noise.
 2. **Effect size:** quantifies the magnitude of a phenomenon or the strength of a relationship. Unlike p-values, effect size is entirely independent of sample size.
-3. **Confidence Interval: (CI)** provides a range of plausible values for an unknown population parameter, calculated from the sample data at a chosen confidence level (typically $95\%$).<br/>
-**Interpretation:** A $95\%$ CI implies that if we were to repeat the experiment or resample the data 100 times and calculate a interval each time, 95 of those 100 calculated intervals would contain the true population parameter.
+3. **Confidence Interval: (CI)** provides a range of plausible values for an unknown population parameter, calculated from the sample data at a chosen confidence level (typically $95\\%$).<br/>
+**Interpretation:** A $95\\%$ CI implies that if we were to repeat the experiment or resample the data 100 times and calculate a interval each time, 95 of those 100 calculated intervals would contain the true population parameter.
 4. **Levene's Test:**
     - **Aim:** To determine whether three or more independent groups have equal population variances.
     - **Mechanism:**
         - Levene’s test bypasses the raw data values and converts them into absolute deviation scores
         - The test runs a standard, classic One-Way ANOVA directly on the deviation scores.
-        - If that underlying ANOVA finds that the average deviation size differs significantly between groups, it tells you that the group spreads are fundamentally unequal.
+        - If that underlying ANOVA finds that the average deviation size differs significantly between groups, it tells us that the group spreads are fundamentally unequal.
         - ANOVA is explained in the section below.
 
 #### **4.7.4 All Statistical Tests Explained:**
@@ -743,7 +743,7 @@ graph TD
         - $$\chi^2 = \sum \frac{(O_{i} - E_{i})^2}{E_{i}}$$
     - **Null Hypothesis ($H_0$):** The two categorical variables are independent of each other. (no relationship)
     - **Alternate Hypothesis ($H_1$):** The two categorical variables are dependent on each other. (There is a significant relationship between them).
-    - **$p$-value:** The calculated $\chi^2$ statistic is mapped to a Chi-Square distribution curve corresponding to those degrees of freedom [$df = (r - 1) \times (c - 1)$.]
+    - **$p$-value:** The calculated $\chi^2$ statistic is mapped to a Chi-Square distribution curve corresponding to those degrees of freedom [$df = (r - 1) \times (c - 1)$]
     - **Effect Size: Cramér's $V$:**
         - $$V = \sqrt{\frac{\chi^2}{n \times \min(r-1, c-1)}}$$
         - Where $n$ is the grand total sample size, $r$ is rows, and $c$ is columns.
@@ -848,7 +848,7 @@ graph TD
     - **Aim:** To determine whether the distributions of two independent groups are significantly different from one another.
     - **Mechanism:** The test pools all observations from both groups together and ranks them from smallest (rank 1) to largest (rank $n$). The test isolates the ranks of each group and calculates a $U$ statistic for each. 
     - **Mathematical Formula:**
-        - For two groups with sample sizes $n_1$ and $n_2$, you first sum the ranks for each group ($R_1$ and $R_2$). 
+        - For two groups with sample sizes $n_1$ and $n_2$, we first sum the ranks for each group ($R_1$ and $R_2$). 
         - The $U$ statistic for each group is calculated as:
         - $$U_1 = n_1 n_2 + \frac{n_1(n_1 + 1)}{2} - R_1$$
         - $$U_2 = n_1 n_2 + \frac{n_2(n_2 + 1)}{2} - R_2$$
@@ -904,9 +904,9 @@ The aim of this subgraph is to use an AI agent to help analyse the given data. T
 #### **4.8.3 Graph Flow:**
 The graph starts off by prompting the user on how they can help.
 
-Based on the query it receives, it prompts its local llm (ollama-3) to generate 5 synonymous queries which are used for RAG retrieval. The similarity scores of these retrieved documents are merged into a single llist of 5 documents using RRF.
+Based on the query it receives, it prompts its local LLM (ollama-3) to generate 5 synonymous queries which are used for RAG retrieval. The similarity scores of these retrieved documents are merged into a single llist of 5 documents using RRF.
 
-This retrieved documents and the user prompt is passsed to an llm router, which decides if there is enough relevant information to answer the asked question, if so it routes directly to the final generation node. If it decides that there is more data needed relevant to the prompt, it may code a program and execute it on the dataset to acquire the relevant information. Hence it routes to the code node.
+This retrieved documents and the user prompt is passsed to an LLM router, which decides if there is enough relevant information to answer the asked question, if so it routes directly to the final generation node. If it decides that there is more data needed relevant to the prompt, it may code a program and execute it on the dataset to acquire the relevant information. Hence it routes to the code node.
 
 The code node prompts a coding agent (Gemini-3.4-flash-lite), to generate the relevant code based on the prompt, and is passed onto the executor node.
 
@@ -914,7 +914,7 @@ The executor node passes this data into the custom SandBox container that is bui
 
 This process of retrying can occur for a max of 5 times, before it falls-back to answering based on the logs and retrieved documents.
 
-In the final generation node, an llm is prompted to generate an appropriate reply to the user prompt given the retrieved documents and the code outputs.
+In the final generation node, an LLM is prompted to generate an appropriate reply to the user prompt given the retrieved documents and the code outputs.
 
 #### **4.8.4 Graph Visualization:**
 ```mermaid
