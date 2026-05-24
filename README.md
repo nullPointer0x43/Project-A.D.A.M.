@@ -40,7 +40,7 @@ By combining deterministic programmatic pipelines with LLM reasoning, the system
     - **[8.1 Docker-Compose](#81-recommended-using-docker-compose)**
     - **[8.2 Manual Setup](#82-manual-setup)**
 9. **[Additional Links](#9-additional-links)**
-10. **[Credits and References](#10-credits-and-references)**
+10. **[Credits and References](#10-technical-references--acknowledgments)**
 
 ## **3. Statistical Background:**
 ### **3.1 Basics:**
@@ -1171,7 +1171,7 @@ All the custom docker images are available on docker-hub:
 4. Custom Sandbox:
     https://hub.docker.com/r/kinjal1234/sandbox-runtime
 
-## **Technical References & Acknowledgments:**
+## **10. Technical References & Acknowledgments:**
 
 This project stands on the shoulders of foundational research in distributed graph computing, secure isolation container sandboxing, and multivariate statistical learning theory. Below are the core references and structural document links utilized in this architecture:
 
