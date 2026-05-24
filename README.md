@@ -743,7 +743,7 @@ graph TD
         - $$\chi^2 = \sum \frac{(O_{i} - E_{i})^2}{E_{i}}$$
     - **Null Hypothesis ($H_0$):** The two categorical variables are independent of each other. (no relationship)
     - **Alternate Hypothesis ($H_1$):** The two categorical variables are dependent on each other. (There is a significant relationship between them).
-    - **$p$-value:** The calculated $\chi^2$ statistic is mapped to a Chi-Square distribution curve corresponding to those degrees of freedom [$df = (r - 1) \times (c - 1)$]
+    - **$p$-value:** The calculated $\chi^2$ statistic is mapped to a Chi-Square distribution curve corresponding to those degrees of freedom: $df = (r - 1) \times (c - 1)$
     - **Effect Size: Cramér's $V$:**
         - $$V = \sqrt{\frac{\chi^2}{n \times \min(r-1, c-1)}}$$
         - Where $n$ is the grand total sample size, $r$ is rows, and $c$ is columns.
